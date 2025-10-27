@@ -17,6 +17,6 @@ public interface PackageTravelService {
 
     List<PackageTravel> findAll();
 
-    List<PackageTravel> findByDestination(String destination);
+    List<PackageTravel> findByCategory(String category);
 
 }

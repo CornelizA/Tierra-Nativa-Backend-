@@ -36,16 +36,21 @@ public class PackageTravelController {
         }
 
         try {
-            PackageTravel createdPackage =iPackageTravelService.registerNewPackage(packageDTO);
+            PackageTravel createdPackage = iPackageTravelService.registerNewPackage(packageDTO);
             return new ResponseEntity<>(createdPackage, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-
     @GetMapping("/admin")
     public ResponseEntity<List<PackageTravel>> getAllPackagesForAdmin() {
+        List<PackageTravel> packages = iPackageTravelService.findAll();
+        return ResponseEntity.ok(packages);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<PackageTravel>> findAll() {
         List<PackageTravel> packages = iPackageTravelService.findAll();
         return ResponseEntity.ok(packages);
     }
@@ -77,18 +82,13 @@ public class PackageTravelController {
         return ResponseEntity.ok("Se eliminó de forma correcta el paquete de viaje con el Id: " + id);
     }
 
- @GetMapping
-public ResponseEntity<List<PackageTravel>> findAll() {
-   return ResponseEntity.ok(iPackageTravelService.findAll());
-}
-
-  @GetMapping("/{destination}")
-  public ResponseEntity<List<PackageTravel>> findByDestination(@PathVariable String destination){
-   List<PackageTravel> packageTravels = iPackageTravelService.findByDestination(destination);
-  if (packageTravels.isEmpty()){
-      return ResponseEntity.notFound().build();
-   } else{
-      return ResponseEntity.ok(packageTravels);
-     }
-  }
+    @GetMapping("/categoria/{category}")
+    public ResponseEntity<List<PackageTravel>> findByCategory(@PathVariable String category){
+        List<PackageTravel> packageTravels = iPackageTravelService.findByCategory(category);
+        if (packageTravels.isEmpty()){
+            return ResponseEntity.notFound().build();
+        } else{
+            return ResponseEntity.ok(packageTravels);
+        }
+    }
 }

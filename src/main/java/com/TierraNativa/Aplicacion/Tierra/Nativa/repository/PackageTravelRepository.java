@@ -9,5 +9,9 @@ import java.util.List;
 @Repository
 public interface PackageTravelRepository extends JpaRepository<PackageTravel, Long> {
 
-    List<PackageTravel> findByDestination(String destination);
+    boolean existsByName(String name);
+
+    boolean existsByNameAndIdNot(String name, Long id);
+
+    List<PackageTravel> findByCategory(String category);
 }

@@ -1,6 +1,7 @@
 package com.TierraNativa.Aplicacion.Tierra.Nativa.service.implement;
 
 import com.TierraNativa.Aplicacion.Tierra.Nativa.entity.*;
+import com.TierraNativa.Aplicacion.Tierra.Nativa.exception.ResourceAlreadyExistsException;
 import com.TierraNativa.Aplicacion.Tierra.Nativa.exception.ResourceNotFoundException;
 import com.TierraNativa.Aplicacion.Tierra.Nativa.repository.PackageTravelRepository;
 import com.TierraNativa.Aplicacion.Tierra.Nativa.service.PackageTravelService;
@@ -29,8 +30,10 @@ public class IPackageTravelService implements PackageTravelService {
 
     @Override
     public void update(PackageTravel packageTravel) {
+        if (packageTravelRepository.existsByNameAndIdNot(packageTravel.getName(), packageTravel.getId())) {
+            throw new ResourceAlreadyExistsException("El nombre del paquete '" + packageTravel.getName() + "' ya está en uso por otro producto.");
+        }
         packageTravelRepository.save(packageTravel);
-
     }
 
     @Override
@@ -49,12 +52,17 @@ public class IPackageTravelService implements PackageTravelService {
     }
 
     @Override
-    public List<PackageTravel> findByDestination(String destination) {
-        return packageTravelRepository.findByDestination(destination);
+    public List<PackageTravel> findByCategory(String category) {
+        return packageTravelRepository.findByCategory(category);
     }
+
 
     @Override
     public PackageTravel registerNewPackage(PackageTravelRequestDTO requestDto) throws Exception {
+
+            if (packageTravelRepository.existsByName(requestDto.getName())) {
+                throw new ResourceAlreadyExistsException("El nombre del paquete '" + requestDto.getName() + "' ya está en uso.");
+            }
 
         PackageTravel newPackage = new PackageTravel();
         newPackage.setName(requestDto.getName());
