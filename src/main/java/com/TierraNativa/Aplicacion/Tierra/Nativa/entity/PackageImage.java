@@ -18,7 +18,7 @@ public class PackageImage {
     private Long id;
 
     @Column(nullable = false)
-    private  String url;
+    private String url;
 
     private Boolean principal;
 

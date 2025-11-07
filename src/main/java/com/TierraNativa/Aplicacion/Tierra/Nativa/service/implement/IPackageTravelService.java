@@ -52,7 +52,7 @@ public class IPackageTravelService implements PackageTravelService {
     }
 
     @Override
-    public List<PackageTravel> findByCategory(String category) {
+    public List<PackageTravel> findByCategory(PackageCategory category) {
         return packageTravelRepository.findByCategory(category);
     }
 

@@ -3,6 +3,7 @@ package com.TierraNativa.Aplicacion.Tierra.Nativa.entity;
 import lombok.Data;
 
 @Data
+
 public class ItineraryDetailDTO {
 
     private String duration;

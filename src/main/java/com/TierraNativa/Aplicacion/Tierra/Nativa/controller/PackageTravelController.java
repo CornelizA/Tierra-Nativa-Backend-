@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -83,11 +84,11 @@ public class PackageTravelController {
     }
 
     @GetMapping("/categoria/{category}")
-    public ResponseEntity<List<PackageTravel>> findByCategory(@PathVariable String category){
+    public ResponseEntity<List<PackageTravel>> findByCategory(@PathVariable PackageCategory category) {
         List<PackageTravel> packageTravels = iPackageTravelService.findByCategory(category);
-        if (packageTravels.isEmpty()){
+        if (packageTravels.isEmpty()) {
             return ResponseEntity.notFound().build();
-        } else{
+        } else {
             return ResponseEntity.ok(packageTravels);
         }
     }

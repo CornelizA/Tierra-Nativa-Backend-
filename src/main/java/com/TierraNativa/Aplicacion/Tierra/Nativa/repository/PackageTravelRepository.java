@@ -1,5 +1,6 @@
 package com.TierraNativa.Aplicacion.Tierra.Nativa.repository;
 
+import com.TierraNativa.Aplicacion.Tierra.Nativa.entity.PackageCategory;
 import com.TierraNativa.Aplicacion.Tierra.Nativa.entity.PackageTravel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -13,5 +14,5 @@ public interface PackageTravelRepository extends JpaRepository<PackageTravel, Lo
 
     boolean existsByNameAndIdNot(String name, Long id);
 
-    List<PackageTravel> findByCategory(String category);
+    List<PackageTravel> findByCategory(PackageCategory category);
 }
