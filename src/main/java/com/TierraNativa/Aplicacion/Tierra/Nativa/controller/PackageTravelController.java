@@ -57,10 +57,10 @@ public class PackageTravelController {
     }
 
     @PutMapping
-    public ResponseEntity<String> update(@RequestBody PackageTravel packageTravel) {
+    public ResponseEntity<PackageTravel> update(@RequestBody PackageTravel packageTravel) {
         try {
-            iPackageTravelService.update(packageTravel);
-            return ResponseEntity.ok("El paquete de viaje ha sido actualizado de forma exitosa.");
+            PackageTravel updatedPackage = iPackageTravelService.update(packageTravel);
+            return ResponseEntity.ok(updatedPackage);
         } catch (ResourceNotFoundException e) {
             throw e;
         }

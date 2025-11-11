@@ -29,11 +29,11 @@ public class IPackageTravelService implements PackageTravelService {
     }
 
     @Override
-    public void update(PackageTravel packageTravel) {
+    public PackageTravel update(PackageTravel packageTravel) {
         if (packageTravelRepository.existsByNameAndIdNot(packageTravel.getName(), packageTravel.getId())) {
             throw new ResourceAlreadyExistsException("El nombre del paquete '" + packageTravel.getName() + "' ya está en uso por otro producto.");
         }
-        packageTravelRepository.save(packageTravel);
+        return packageTravelRepository.save(packageTravel);
     }
 
     @Override

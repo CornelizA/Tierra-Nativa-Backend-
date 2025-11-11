@@ -14,7 +14,7 @@ public interface PackageTravelService {
 
     Optional<PackageTravel> findById(Long id);
 
-    void update(PackageTravel packageTravel);
+    PackageTravel update(PackageTravel packageTravel);
 
     void delete(Long id);
 
