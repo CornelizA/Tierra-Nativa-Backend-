@@ -1,4 +1,4 @@
-package com.TierraNativa.Aplicacion.Tierra.Nativa.entity;
+package com.tierranativa.aplicacion.tierra.nativa.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
@@ -11,7 +11,7 @@ import lombok.*;
 @Entity
 @Table(name = "package_itinerary_detail")
 
-public class PackageItineraryDetail {
+public class packageItineraryDetail {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,12 +44,12 @@ public class PackageItineraryDetail {
     @EqualsAndHashCode.Exclude
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "package_travel_id")
-    private PackageTravel packageTravel;
+    private packageTravel packageTravel;
 
-    public void setPackageTravel(PackageTravel packageTravel) {
+    public void setPackageTravel(packageTravel packageTravel) {
         if (this.packageTravel == packageTravel) return;
 
-        PackageTravel previous = this.packageTravel;
+        packageTravel previous = this.packageTravel;
         this.packageTravel = packageTravel;
 
         if (previous != null && previous.getItineraryDetail() == this) {

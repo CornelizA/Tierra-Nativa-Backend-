@@ -1,10 +1,10 @@
-package com.TierraNativa.Aplicacion.Tierra.Nativa.service.implement;
+package com.tierranativa.aplicacion.tierra.nativa.service.implement;
 
-import com.TierraNativa.Aplicacion.Tierra.Nativa.entity.*;
-import com.TierraNativa.Aplicacion.Tierra.Nativa.exception.ResourceAlreadyExistsException;
-import com.TierraNativa.Aplicacion.Tierra.Nativa.exception.ResourceNotFoundException;
-import com.TierraNativa.Aplicacion.Tierra.Nativa.repository.PackageTravelRepository;
-import com.TierraNativa.Aplicacion.Tierra.Nativa.service.PackageTravelService;
+import com.tierranativa.aplicacion.tierra.nativa.entity.*;
+import com.tierranativa.aplicacion.tierra.nativa.exception.resourceAlreadyExistsException;
+import com.tierranativa.aplicacion.tierra.nativa.exception.resourceNotFoundException;
+import com.tierranativa.aplicacion.tierra.nativa.repository.packageTravelRepository;
+import com.tierranativa.aplicacion.tierra.nativa.service.packageTravelService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,69 +14,69 @@ import java.util.Optional;
 
 @Service
 @Transactional
-public class IPackageTravelService implements PackageTravelService {
+public class iPackageTravelService implements packageTravelService {
 
-    private PackageTravelRepository packageTravelRepository;
+    private final packageTravelRepository packageTravelRepository;
 
     @Autowired
-    public IPackageTravelService(PackageTravelRepository packageTravelRepository) {
+    public iPackageTravelService(packageTravelRepository packageTravelRepository) {
         this.packageTravelRepository = packageTravelRepository;
     }
 
     @Override
-    public Optional<PackageTravel> findById(Long id) {
+    public Optional<packageTravel> findById(Long id) {
         return packageTravelRepository.findById(id);
     }
 
     @Override
-    public PackageTravel update(PackageTravel packageTravel) {
+    public packageTravel update(packageTravel packageTravel) {
         if (packageTravelRepository.existsByNameAndIdNot(packageTravel.getName(), packageTravel.getId())) {
-            throw new ResourceAlreadyExistsException("El nombre del paquete '" + packageTravel.getName() + "' ya está en uso por otro producto.");
+            throw new resourceAlreadyExistsException("El nombre del paquete '" + packageTravel.getName() + "' ya está en uso por otro producto.");
         }
         return packageTravelRepository.save(packageTravel);
     }
 
     @Override
     public void delete(Long id) {
-        Optional<PackageTravel> packageTravelToLookFor = findById(id);
+        Optional<packageTravel> packageTravelToLookFor = findById(id);
         if (packageTravelToLookFor.isPresent()) {
             packageTravelRepository.deleteById(id);
         } else {
-            throw new ResourceNotFoundException("No se pudo eliminar el Paquete de Viaje correspondiente al Id: " + id);
+            throw new resourceNotFoundException("No se pudo eliminar el Paquete de Viaje correspondiente al Id: " + id);
         }
     }
 
     @Override
-    public List<PackageTravel> findAll() {
+    public List<packageTravel> findAll() {
         return packageTravelRepository.findAll();
     }
 
     @Override
-    public List<PackageTravel> findByCategory(PackageCategory category) {
+    public List<packageTravel> findByCategory(packageCategory category) {
         return packageTravelRepository.findByCategory(category);
     }
 
 
     @Override
-    public PackageTravel registerNewPackage(PackageTravelRequestDTO requestDto) throws Exception {
+    public packageTravel registerNewPackage(packageTravelRequestDTO requestDto) {
 
             if (packageTravelRepository.existsByName(requestDto.getName())) {
-                throw new ResourceAlreadyExistsException("El nombre del paquete '" + requestDto.getName() + "' ya está en uso.");
+                throw new resourceAlreadyExistsException("El nombre del paquete '" + requestDto.getName() + "' ya está en uso.");
             }
 
-        PackageTravel newPackage = new PackageTravel();
+        packageTravel newPackage = new packageTravel();
         newPackage.setName(requestDto.getName());
         newPackage.setBasePrice(requestDto.getBasePrice());
         newPackage.setShortDescription(requestDto.getShortDescription());
         newPackage.setDestination(requestDto.getDestination());
-        newPackage.setCategory(PackageCategory.valueOf(requestDto.getCategory()));
+        newPackage.setCategory(packageCategory.valueOf(requestDto.getCategory()));
         if (requestDto.getImageDetails() != null && !requestDto.getImageDetails().isEmpty()) {
             newPackage.setImageUrl(requestDto.getImageDetails().get(0).getUrl());
         }
 
         if (requestDto.getItineraryDetail() != null) {
-            ItineraryDetailDTO detailDto = requestDto.getItineraryDetail();
-            PackageItineraryDetail itineraryDetailEntity = PackageItineraryDetail.builder()
+            itineraryDetailDTO detailDto = requestDto.getItineraryDetail();
+            packageItineraryDetail itineraryDetailEntity = packageItineraryDetail.builder()
                     .duration(detailDto.getDuration())
                     .lodgingType(detailDto.getLodgingType())
                     .transferType(detailDto.getTransferType())
@@ -90,8 +90,8 @@ public class IPackageTravelService implements PackageTravelService {
         }
 
         if (requestDto.getImageDetails() != null) {
-            for (ImageDTO imageDto : requestDto.getImageDetails()) {
-                PackageImage imageEntity = PackageImage.builder()
+            for (imageDTO imageDto : requestDto.getImageDetails()) {
+                packageImage imageEntity = packageImage.builder()
                         .url(imageDto.getUrl())
                         .principal(imageDto.getPrincipal() != null ? imageDto.getPrincipal() : false)
                         .build();

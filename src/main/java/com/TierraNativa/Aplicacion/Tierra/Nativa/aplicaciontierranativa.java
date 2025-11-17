@@ -1,13 +1,13 @@
-package com.TierraNativa.Aplicacion.Tierra.Nativa;
+package com.tierranativa.aplicacion.tierra.nativa;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class AplicacionTierraNativaApplication {
+public class aplicaciontierranativa {
 
     public static void main(String[] args) {
-        SpringApplication.run(AplicacionTierraNativaApplication.class, args);
+        SpringApplication.run(aplicaciontierranativa.class, args);
     }
 
 }

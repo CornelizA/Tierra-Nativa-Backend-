@@ -1,4 +1,4 @@
-package com.TierraNativa.Aplicacion.Tierra.Nativa.entity;
+package com.tierranativa.aplicacion.tierra.nativa.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
@@ -10,7 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @Entity
 @Table(name = "package_image")
-public class PackageImage {
+public class packageImage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,12 +27,12 @@ public class PackageImage {
     @EqualsAndHashCode.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "package_travel_id")
-    private PackageTravel packageTravel;
+    private packageTravel packageTravel;
 
-    public void setPackageTravel(PackageTravel packageTravel) {
+    public void setPackageTravel(packageTravel packageTravel) {
         if (this.packageTravel == packageTravel) return;
 
-        PackageTravel previous = this.packageTravel;
+        packageTravel previous = this.packageTravel;
         this.packageTravel = packageTravel;
 
         if (previous != null && previous.getImages().contains(this)) {

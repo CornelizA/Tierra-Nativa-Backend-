@@ -1,10 +1,9 @@
-package com.TierraNativa.Aplicacion.Tierra.Nativa.Repository;
+package com.tierranativa.aplicacion.tierra.nativa.repository;
 
-import com.TierraNativa.Aplicacion.Tierra.Nativa.entity.PackageCategory;
-import com.TierraNativa.Aplicacion.Tierra.Nativa.entity.PackageImage;
-import com.TierraNativa.Aplicacion.Tierra.Nativa.entity.PackageItineraryDetail;
-import com.TierraNativa.Aplicacion.Tierra.Nativa.entity.PackageTravel;
-import com.TierraNativa.Aplicacion.Tierra.Nativa.repository.PackageTravelRepository;
+import com.tierranativa.aplicacion.tierra.nativa.entity.packageCategory;
+import com.tierranativa.aplicacion.tierra.nativa.entity.packageImage;
+import com.tierranativa.aplicacion.tierra.nativa.entity.packageItineraryDetail;
+import com.tierranativa.aplicacion.tierra.nativa.entity.packageTravel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,16 +14,16 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-class PackageTravelRepositoryTest {
+class packageTravelRepositoryTest {
 
     @Autowired
-    private PackageTravelRepository packageTravelRepository;
-    private PackageTravel packageTravel1;
-    private PackageTravel packageTravel2;
+    private packageTravelRepository packageTravelRepository;
+    private packageTravel packageTravel1;
+    private packageTravel packageTravel2;
 
     @BeforeEach
     void setUp() {
-        PackageItineraryDetail itineraryDetail1 = new PackageItineraryDetail();
+        packageItineraryDetail itineraryDetail1 = new packageItineraryDetail();
         itineraryDetail1.setDuration("7 Días");
         itineraryDetail1.setLodgingType("Hotel");
         itineraryDetail1.setTransferType("Vuelos-Terrestres");
@@ -32,7 +31,7 @@ class PackageTravelRepositoryTest {
         itineraryDetail1.setFoodAndHydrationNotes("Alimentación variada");
         itineraryDetail1.setGeneralRecommendations("Diviertanse");
 
-        PackageItineraryDetail itineraryDetail2 = new PackageItineraryDetail();
+        packageItineraryDetail itineraryDetail2 = new packageItineraryDetail();
         itineraryDetail2.setDuration("3 Días");
         itineraryDetail2.setLodgingType("Cabaña");
         itineraryDetail2.setTransferType("Terrestre");
@@ -40,32 +39,32 @@ class PackageTravelRepositoryTest {
         itineraryDetail2.setFoodAndHydrationNotes("Notas 2");
         itineraryDetail2.setGeneralRecommendations("Recomendaciones 2");
 
-        PackageImage image1 = new PackageImage();
+        packageImage image1 = new packageImage();
         image1.setUrl("https://ruta/imagen_patagonia_principal.jpg");
         image1.setPrincipal(true);
 
-        PackageImage image2 = new PackageImage();
+        packageImage image2 = new packageImage();
         image2.setUrl("https://ruta/imagen_cordoba_principal.jpg");
         image2.setPrincipal(true);
 
-        packageTravel1 = new PackageTravel();
+        packageTravel1 = new packageTravel();
         packageTravel1.setName("Aventura Patagonia");
         packageTravel1.setBasePrice(1500.00);
         packageTravel1.setDestination("Patagonia Argentina");
         packageTravel1.setShortDescription("Descripción corta aventura.");
-        packageTravel1.setCategory(PackageCategory.GEOPAISAJES);
+        packageTravel1.setCategory(packageCategory.GEOPAISAJES);
         packageTravel1.setItineraryDetail(itineraryDetail1);
         itineraryDetail1.setPackageTravel(packageTravel1);
         image1.setPackageTravel(packageTravel1);
         packageTravel1.setImages(List.of(image1));
         packageTravel1 = packageTravelRepository.save(packageTravel1);
 
-        packageTravel2 = new PackageTravel();
+        packageTravel2 = new packageTravel();
         packageTravel2.setName("Relajación Cordobesa");
         packageTravel2.setBasePrice(800.50);
         packageTravel2.setDestination("Sierras de Córdoba");
         packageTravel2.setShortDescription("Descripción corta relajación.");
-        packageTravel2.setCategory(PackageCategory.RELAJACION);
+        packageTravel2.setCategory(packageCategory.RELAJACION);
         packageTravel2.setItineraryDetail(itineraryDetail2);
         itineraryDetail2.setPackageTravel(packageTravel2);
         image2.setPackageTravel(packageTravel2);
@@ -75,7 +74,7 @@ class PackageTravelRepositoryTest {
 
     @Test
     void findByCategory() {
-        List<PackageTravel> foundPackages = packageTravelRepository.findByCategory(PackageCategory.GEOPAISAJES);
+        List<packageTravel> foundPackages = packageTravelRepository.findByCategory(packageCategory.GEOPAISAJES);
         assertThat(foundPackages).hasSize(1);
         assertThat(foundPackages.get(0).getName()).isEqualTo("Aventura Patagonia");
         assertThat(foundPackages.get(0).getImages()).isNotEmpty();

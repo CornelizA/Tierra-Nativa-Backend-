@@ -1,10 +1,10 @@
-package com.TierraNativa.Aplicacion.Tierra.Nativa;
+package com.tierranativa.aplicacion.tierra.nativa;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class AplicacionTierraNativaApplicationTests {
+class aplicaciontierranativaTests {
 
 	@Test
 	void contextLoads() {

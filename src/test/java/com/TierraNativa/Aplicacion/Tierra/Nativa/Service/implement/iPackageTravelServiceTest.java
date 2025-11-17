@@ -1,10 +1,10 @@
-package com.TierraNativa.Aplicacion.Tierra.Nativa.Service.implement;
+package com.tierranativa.aplicacion.tierra.nativa.Service.implement;
 
-import com.TierraNativa.Aplicacion.Tierra.Nativa.entity.*;
-import com.TierraNativa.Aplicacion.Tierra.Nativa.exception.ResourceAlreadyExistsException;
-import com.TierraNativa.Aplicacion.Tierra.Nativa.exception.ResourceNotFoundException;
-import com.TierraNativa.Aplicacion.Tierra.Nativa.repository.PackageTravelRepository;
-import com.TierraNativa.Aplicacion.Tierra.Nativa.service.implement.IPackageTravelService;
+import com.tierranativa.aplicacion.tierra.nativa.entity.*;
+import com.tierranativa.aplicacion.tierra.nativa.exception.resourceAlreadyExistsException;
+import com.tierranativa.aplicacion.tierra.nativa.exception.resourceNotFoundException;
+import com.tierranativa.aplicacion.tierra.nativa.repository.packageTravelRepository;
+import com.tierranativa.aplicacion.tierra.nativa.service.implement.iPackageTravelService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,31 +22,31 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class IPackageTravelServiceTest {
+class iPackageTravelServiceTest {
 
     @Mock
-    private PackageTravelRepository packageTravelRepository;
+    private packageTravelRepository packageTravelRepository;
 
     @InjectMocks
-    private IPackageTravelService packageTravelService;
+    private iPackageTravelService packageTravelService;
 
     @Captor
-    private ArgumentCaptor<PackageTravel> packageTravelCaptor;
-    private PackageTravel mockPackage;
-    private PackageTravelRequestDTO validDto;
+    private ArgumentCaptor<packageTravel> packageTravelCaptor;
+    private packageTravel mockPackage;
+    private packageTravelRequestDTO validDto;
 
     @BeforeEach
     void setUp() {
 
-        mockPackage = new PackageTravel();
+        mockPackage = new packageTravel();
         mockPackage.setId(1L);
         mockPackage.setName("Paquete Test");
         mockPackage.setBasePrice(20000.00);
         mockPackage.setDestination("Corrientes");
         mockPackage.setShortDescription("Descripción corta relajación.");
-        mockPackage.setCategory(PackageCategory.RELAJACION);
+        mockPackage.setCategory(packageCategory.RELAJACION);
 
-        ItineraryDetailDTO detailDto = new ItineraryDetailDTO();
+        itineraryDetailDTO detailDto = new itineraryDetailDTO();
         detailDto.setDuration("5 Días");
         detailDto.setLodgingType("Hotel");
         detailDto.setTransferType("Vuelos-Terrestres");
@@ -54,11 +54,11 @@ class IPackageTravelServiceTest {
         detailDto.setFoodAndHydrationNotes("Alimentación variada");
         detailDto.setGeneralRecommendations("Diviertanse");
 
-        ImageDTO imageDto = new ImageDTO();
+        imageDTO imageDto = new imageDTO();
         imageDto.setUrl("http://image.url/principal.jpg");
         imageDto.setPrincipal(true);
 
-        validDto = new PackageTravelRequestDTO(
+        validDto = new packageTravelRequestDTO(
                 "Paquete Nuevo",
                 detailDto,
                 1500.00,
@@ -72,10 +72,10 @@ class IPackageTravelServiceTest {
     @Test
     void registerNewPackage() throws Exception {
         when(packageTravelRepository.existsByName(anyString())).thenReturn(false);
-        when(packageTravelRepository.save(any(PackageTravel.class))).thenReturn(mockPackage);
+        when(packageTravelRepository.save(any(packageTravel.class))).thenReturn(mockPackage);
         packageTravelService.registerNewPackage(validDto);
         verify(packageTravelRepository, times(1)).save(packageTravelCaptor.capture());
-        PackageTravel packageToSave = packageTravelCaptor.getValue();
+        packageTravel packageToSave = packageTravelCaptor.getValue();
         assertThat(packageToSave.getName()).isEqualTo(validDto.getName());
         assertThat(packageToSave.getItineraryDetail().getDuration()).isEqualTo("5 Días");
         assertThat(packageToSave.getImageUrl()).isEqualTo("http://image.url/principal.jpg");
@@ -84,7 +84,7 @@ class IPackageTravelServiceTest {
     @Test
     void registerNewPackage_ResourceAlreadyExistsException_NombreExiste() {
         when(packageTravelRepository.existsByName(anyString())).thenReturn(true);
-        assertThrows(ResourceAlreadyExistsException.class,
+        assertThrows(resourceAlreadyExistsException.class,
                 () -> packageTravelService.registerNewPackage(validDto));
         verify(packageTravelRepository, never()).save(any());
     }
@@ -100,7 +100,7 @@ class IPackageTravelServiceTest {
     @Test
     void update_ResourceAlreadyExistsException_NombreExiste() {
         when(packageTravelRepository.existsByNameAndIdNot(anyString(), anyLong())).thenReturn(true);
-        assertThrows(ResourceAlreadyExistsException.class,
+        assertThrows(resourceAlreadyExistsException.class,
                 () -> packageTravelService.update(mockPackage));
         verify(packageTravelRepository, never()).save(any());
     }
@@ -115,17 +115,17 @@ class IPackageTravelServiceTest {
     @Test
     void delete_ResourceNotFoundException_NoExiste() {
         when(packageTravelRepository.findById(99L)).thenReturn(Optional.empty());
-        assertThrows(ResourceNotFoundException.class,
+        assertThrows(resourceNotFoundException.class,
                 () -> packageTravelService.delete(99L));
         verify(packageTravelRepository, never()).deleteById(anyLong());
     }
 
     @Test
     void findByCategory() {
-        when(packageTravelRepository.findByCategory(PackageCategory.GEOPAISAJES)).thenReturn(List.of(mockPackage));
-        List<PackageTravel> result = packageTravelService.findByCategory(PackageCategory.GEOPAISAJES);
+        when(packageTravelRepository.findByCategory(packageCategory.GEOPAISAJES)).thenReturn(List.of(mockPackage));
+        List<packageTravel> result = packageTravelService.findByCategory(packageCategory.GEOPAISAJES);
         assertThat(result).isNotEmpty();
         assertThat(result.get(0).getId()).isEqualTo(1L);
-        assertThat(result.get(0).getCategory()).isEqualTo(PackageCategory.RELAJACION);
+        assertThat(result.get(0).getCategory()).isEqualTo(packageCategory.RELAJACION);
     }
 }

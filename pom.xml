@@ -8,8 +8,8 @@
         <version>3.5.6</version>
         <relativePath/>
     </parent>
-    <groupId>com.TierraNativa</groupId>
-    <artifactId>Tierra-Nativa</artifactId>
+    <groupId>com.tierranativa</groupId>
+    <artifactId>tierra-nativa</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>Tierra-Nativa</name>
     <description>Proyecto aplicación de reservas Tierra Nativa, dirigida a reservas de paquetes de viajes a nivel
@@ -44,7 +44,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+            <version>3.0.2</version>
+        </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
