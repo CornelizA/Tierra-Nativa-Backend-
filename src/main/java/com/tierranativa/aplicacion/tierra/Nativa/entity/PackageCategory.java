@@ -1,6 +1,6 @@
 package com.tierranativa.aplicacion.tierra.nativa.entity;
 
-public enum packageCategory {
+public enum PackageCategory {
     AVENTURA,
     ECOTURISMO,
     RELAJACION,

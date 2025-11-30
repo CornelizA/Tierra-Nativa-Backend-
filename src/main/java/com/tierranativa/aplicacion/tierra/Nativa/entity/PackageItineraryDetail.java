@@ -11,7 +11,7 @@ import lombok.*;
 @Entity
 @Table(name = "package_itinerary_detail")
 
-public class packageItineraryDetail {
+public class PackageItineraryDetail {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,12 +44,12 @@ public class packageItineraryDetail {
     @EqualsAndHashCode.Exclude
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "package_travel_id")
-    private packageTravel packageTravel;
+    private PackageTravel packageTravel;
 
-    public void setPackageTravel(packageTravel packageTravel) {
+    public void setPackageTravel(PackageTravel packageTravel) {
         if (this.packageTravel == packageTravel) return;
 
-        packageTravel previous = this.packageTravel;
+        PackageTravel previous = this.packageTravel;
         this.packageTravel = packageTravel;
 
         if (previous != null && previous.getItineraryDetail() == this) {

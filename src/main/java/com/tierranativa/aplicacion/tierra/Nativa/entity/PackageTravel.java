@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "package_travel")
-public class packageTravel {
+public class PackageTravel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,7 +33,7 @@ public class packageTravel {
     private String destination;
 
     @Enumerated(EnumType.STRING)
-    private packageCategory category;
+    private PackageCategory category;
 
     private String imageUrl;
 
@@ -41,15 +41,15 @@ public class packageTravel {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @OneToOne(mappedBy = "packageTravel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private packageItineraryDetail itineraryDetail;
+    private PackageItineraryDetail itineraryDetail;
 
     @JsonManagedReference
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "packageTravel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<packageImage> images = new ArrayList<>();
+    private List<PackageImage> images = new ArrayList<>();
 
-    public void addImage(packageImage image) {
+    public void addImage(PackageImage image) {
         if (image == null || images.contains(image)) return;
         images.add(image);
         if (image.getPackageTravel() != this) {
@@ -57,7 +57,7 @@ public class packageTravel {
         }
     }
 
-    public void removeImage(packageImage image) {
+    public void removeImage(PackageImage image) {
         if (image == null || !images.contains(image)) return;
         images.remove(image);
         if (image.getPackageTravel() == this) {
@@ -65,10 +65,10 @@ public class packageTravel {
         }
     }
 
-    public void setItineraryDetail(packageItineraryDetail detail) {
+    public void setItineraryDetail(PackageItineraryDetail detail) {
         if (this.itineraryDetail == detail) return;
 
-        packageItineraryDetail previous = this.itineraryDetail;
+        PackageItineraryDetail previous = this.itineraryDetail;
         this.itineraryDetail = detail;
 
         if (previous != null && previous.getPackageTravel() == this) {
@@ -76,6 +76,15 @@ public class packageTravel {
         }
         if (detail != null && detail.getPackageTravel() != this) {
             detail.setPackageTravel(this);
+        }
+    }
+
+    public void syncImages(List<PackageImage> newImages) {
+        this.images.clear();
+        if (newImages != null) {
+            for (PackageImage image : newImages) {
+                this.addImage(image);
+            }
         }
     }
 }

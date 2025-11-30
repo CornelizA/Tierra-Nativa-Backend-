@@ -6,15 +6,15 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
-public class globalException {
+public class GlobalException {
 
-    @ExceptionHandler(resourceNotFoundException.class)
-    public ResponseEntity<String> processResourceNotFoundException(resourceNotFoundException exception) {
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<String> processResourceNotFoundException(ResourceNotFoundException exception) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
     }
 
-    @ExceptionHandler(resourceAlreadyExistsException.class)
-    public ResponseEntity<String> processResourceAlreadyExistsException(resourceAlreadyExistsException exception) {
+    @ExceptionHandler(ResourceAlreadyExistsException.class)
+    public ResponseEntity<String> processResourceAlreadyExistsException(ResourceAlreadyExistsException exception) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(exception.getMessage());
     }
 }

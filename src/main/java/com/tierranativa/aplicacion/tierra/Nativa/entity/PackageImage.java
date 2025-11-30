@@ -10,7 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @Entity
 @Table(name = "package_image")
-public class packageImage {
+public class PackageImage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,19 +27,5 @@ public class packageImage {
     @EqualsAndHashCode.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "package_travel_id")
-    private packageTravel packageTravel;
-
-    public void setPackageTravel(packageTravel packageTravel) {
-        if (this.packageTravel == packageTravel) return;
-
-        packageTravel previous = this.packageTravel;
-        this.packageTravel = packageTravel;
-
-        if (previous != null && previous.getImages().contains(this)) {
-            previous.getImages().remove(this);
-        }
-        if (packageTravel != null && !packageTravel.getImages().contains(this)) {
-            packageTravel.getImages().add(this);
-        }
-    }
+    private PackageTravel packageTravel;
 }

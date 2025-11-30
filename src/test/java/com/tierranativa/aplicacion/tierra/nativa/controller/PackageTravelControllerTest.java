@@ -1,7 +1,10 @@
 package com.tierranativa.aplicacion.tierra.nativa.controller;
 
+import com.tierranativa.aplicacion.tierra.nativa.dto.ImageDTO;
+import com.tierranativa.aplicacion.tierra.nativa.dto.ItineraryDetailDTO;
+import com.tierranativa.aplicacion.tierra.nativa.dto.PackageTravelRequestDTO;
 import com.tierranativa.aplicacion.tierra.nativa.entity.*;
-import com.tierranativa.aplicacion.tierra.nativa.service.implement.iPackageTravelService;
+import com.tierranativa.aplicacion.tierra.nativa.service.implement.IPackageTravelService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,28 +30,28 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
-class packageTravelControllerTest {
+class PackageTravelControllerTest {
 
     @Mock
-    private iPackageTravelService packageTravelService;
+    private IPackageTravelService packageTravelService;
 
     @InjectMocks
-    private packageTravelController packageTravelController;
+    private PackageTravelController packageTravelController;
     private MockMvc mockMvc;
     private ObjectMapper objectMapper = new ObjectMapper();
-    private packageTravel mockPackage;
+    private PackageTravel mockPackage;
     private String packageTravelJson;
 
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(packageTravelController).build();
-        mockPackage = new packageTravel();
+        mockPackage = new PackageTravel();
         mockPackage.setId(1L);
         mockPackage.setName("Aventura Simplificada");
         mockPackage.setDestination("Patagonia");
         mockPackage.setBasePrice(1500.00);
 
-        itineraryDetailDTO mockItineraryDetail = new itineraryDetailDTO();
+        ItineraryDetailDTO mockItineraryDetail = new ItineraryDetailDTO();
         mockItineraryDetail.setDuration("7 Días");
         mockItineraryDetail.setLodgingType("Hotel de Montaña");
         mockItineraryDetail.setTransferType("Vuelos-Terrestres");
@@ -56,11 +59,11 @@ class packageTravelControllerTest {
         mockItineraryDetail.setFoodAndHydrationNotes("Alimentación variada de acuerdo a la necesidad");
         mockItineraryDetail.setGeneralRecommendations("Diviertanse");
 
-        imageDTO mockImage = new imageDTO();
+        ImageDTO mockImage = new ImageDTO();
         mockImage.setUrl("https://ruta/imagen_principal.jpg");
         mockImage.setPrincipal(true);
 
-        packageTravelRequestDTO validDto = new packageTravelRequestDTO(
+        PackageTravelRequestDTO validDto = new PackageTravelRequestDTO(
                 "Paquete Simplificado",
                 mockItineraryDetail,
                 1500.00,
@@ -107,7 +110,7 @@ class packageTravelControllerTest {
 
     @Test
     void testPostRegisterPackage() throws Exception {
-        when(packageTravelService.registerNewPackage(any(packageTravelRequestDTO.class))).thenReturn(mockPackage);
+        when(packageTravelService.registerNewPackage(any(PackageTravelRequestDTO.class))).thenReturn(mockPackage);
         mockMvc.perform(post("/paquetes")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(packageTravelJson))
@@ -128,7 +131,7 @@ class packageTravelControllerTest {
 
     @Test
     void testFindByCategory() throws Exception {
-        when(packageTravelService.findByCategory(packageCategory.GEOPAISAJES)).thenReturn(List.of(mockPackage));
+        when(packageTravelService.findByCategory(PackageCategory.GEOPAISAJES)).thenReturn(List.of(mockPackage));
         mockMvc.perform(get("/paquetes/categoria/GEOPAISAJES")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
