@@ -1,6 +1,5 @@
 package com.tierranativa.aplicacion.tierra.nativa.repository;
 
-import com.tierranativa.aplicacion.tierra.nativa.entity.PackageCategory;
 import com.tierranativa.aplicacion.tierra.nativa.entity.PackageImage;
 import com.tierranativa.aplicacion.tierra.nativa.entity.PackageItineraryDetail;
 import com.tierranativa.aplicacion.tierra.nativa.entity.PackageTravel;

@@ -47,7 +47,7 @@ class IPackageTravelServiceTest {
         mockPackage.setBasePrice(20000.00);
         mockPackage.setDestination("Corrientes");
         mockPackage.setShortDescription("Descripción corta relajación.");
-        mockPackage.setCategory(PackageCategory.RELAJACION);
+        mockPackage.setCategory(Category.RELAJACION);
 
         ItineraryDetailDTO detailDto = new ItineraryDetailDTO();
         detailDto.setDuration("5 Días");
@@ -125,10 +125,10 @@ class IPackageTravelServiceTest {
 
     @Test
     void findByCategory() {
-        when(packageTravelRepository.findByCategory(PackageCategory.GEOPAISAJES)).thenReturn(List.of(mockPackage));
-        List<PackageTravel> result = packageTravelService.findByCategory(PackageCategory.GEOPAISAJES);
+        when(packageTravelRepository.findByCategory(Category.GEOPAISAJES)).thenReturn(List.of(mockPackage));
+        List<PackageTravel> result = packageTravelService.findByCategory(Category.GEOPAISAJES);
         assertThat(result).isNotEmpty();
         assertThat(result.get(0).getId()).isEqualTo(1L);
-        assertThat(result.get(0).getCategory()).isEqualTo(PackageCategory.RELAJACION);
+        assertThat(result.get(0).getCategory()).isEqualTo(Category.RELAJACION);
     }
 }

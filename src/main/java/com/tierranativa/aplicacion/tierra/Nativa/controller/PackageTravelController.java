@@ -1,5 +1,6 @@
 package com.tierranativa.aplicacion.tierra.nativa.controller;
 
+import com.tierranativa.aplicacion.tierra.nativa.dto.CategoryPackagesDTO;
 import com.tierranativa.aplicacion.tierra.nativa.dto.PackageTravelRequestDTO;
 import com.tierranativa.aplicacion.tierra.nativa.entity.*;
 import com.tierranativa.aplicacion.tierra.nativa.exception.ResourceNotFoundException;
@@ -27,10 +28,10 @@ public class PackageTravelController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('ADMIN')")
-        public ResponseEntity<PackageTravel> registerPackage(@Validated @RequestBody PackageTravelRequestDTO packageDTO)  {
-            PackageTravel createdPackage = iPackageTravelService.registerNewPackage(packageDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdPackage);
-        }
+    public ResponseEntity<PackageTravel> registerPackage(@Validated @RequestBody PackageTravelRequestDTO packageDTO) {
+        PackageTravel createdPackage = iPackageTravelService.registerNewPackage(packageDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdPackage);
+    }
 
 
     @GetMapping
@@ -75,13 +76,4 @@ public class PackageTravelController {
         return ResponseEntity.ok("Se eliminó de forma correcta el paquete de viaje con el Id: " + id);
     }
 
-    @GetMapping("/categoria/{category}")
-    public ResponseEntity<List<PackageTravel>> findByCategory(@PathVariable PackageCategory category) {
-        List<PackageTravel> PackageTravels = iPackageTravelService.findByCategory(category);
-        if (PackageTravels.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        } else {
-            return ResponseEntity.ok(PackageTravels);
-        }
-    }
 }

@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -33,4 +34,5 @@ public class UserRegistrationRequestDTO {
     @Size(min = 8, max = 50)
     private String password;
 }
+
 

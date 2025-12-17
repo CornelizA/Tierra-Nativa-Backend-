@@ -1,10 +1,13 @@
 package com.tierranativa.aplicacion.tierra.nativa.dto;
 
+import com.tierranativa.aplicacion.tierra.nativa.entity.PackageImage;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class ImageDTO {
 
     @NotBlank(message = "La URL de la imagen es obligatoria.")
@@ -12,5 +15,16 @@ public class ImageDTO {
 
     @NotNull(message = "El indicador principal es obligatorio.")
     private Boolean principal;
+
+    public static ImageDTO fromEntity(PackageImage image) {
+        if (image == null) {
+            return null;
+        }
+        return ImageDTO.builder()
+                .url(image.getUrl())
+                .principal(image.getPrincipal())
+                .build();
+    }
 }
+
 

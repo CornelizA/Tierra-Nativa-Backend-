@@ -5,7 +5,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Builder
 @Getter
@@ -32,8 +34,11 @@ public class PackageTravel {
     @Column(name = "destination", nullable = false)
     private String destination;
 
-    @Enumerated(EnumType.STRING)
-    private PackageCategory category;
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
+    @JoinTable(name = "package_categories", joinColumns =
+    @JoinColumn(name = "package_id"), inverseJoinColumns =
+    @JoinColumn(name = "category_id"))
+    private Set<Category> categories= new HashSet<>();
 
     private String imageUrl;
 

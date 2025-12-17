@@ -1,11 +1,13 @@
 package com.tierranativa.aplicacion.tierra.nativa.service.implement;
 
+import com.tierranativa.aplicacion.tierra.nativa.dto.CategoryPackagesDTO;
 import com.tierranativa.aplicacion.tierra.nativa.dto.ImageDTO;
 import com.tierranativa.aplicacion.tierra.nativa.dto.ItineraryDetailDTO;
 import com.tierranativa.aplicacion.tierra.nativa.dto.PackageTravelRequestDTO;
 import com.tierranativa.aplicacion.tierra.nativa.entity.*;
 import com.tierranativa.aplicacion.tierra.nativa.exception.ResourceAlreadyExistsException;
 import com.tierranativa.aplicacion.tierra.nativa.exception.ResourceNotFoundException;
+import com.tierranativa.aplicacion.tierra.nativa.repository.CategoryRepository;
 import com.tierranativa.aplicacion.tierra.nativa.repository.PackageTravelRepository;
 import com.tierranativa.aplicacion.tierra.nativa.service.PackageTravelService;
 import jakarta.transaction.Transactional;
@@ -14,16 +16,20 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class IPackageTravelService implements PackageTravelService {
 
     private final PackageTravelRepository packageTravelRepository;
+    private final CategoryRepository categoryRepository;
 
     @Autowired
-    public IPackageTravelService(PackageTravelRepository packageTravelRepository) {
+    public IPackageTravelService(PackageTravelRepository packageTravelRepository, CategoryRepository categoryRepository) {
         this.packageTravelRepository = packageTravelRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     @Override
@@ -43,7 +49,13 @@ public class IPackageTravelService implements PackageTravelService {
         newPackage.setBasePrice(requestDto.getBasePrice());
         newPackage.setShortDescription(requestDto.getShortDescription());
         newPackage.setDestination(requestDto.getDestination());
-        newPackage.setCategory(PackageCategory.valueOf(requestDto.getCategory()));
+
+        Set<Category> categories = requestDto.getCategoryId().stream()
+                .map(id -> categoryRepository.findById(id)
+                        .orElseThrow(() -> new ResourceNotFoundException("Categoría con ID " + id + " no encontrada.")))
+                .collect(Collectors.toSet());
+        newPackage.setCategories(categories);
+
         if (requestDto.getImageDetails() != null && !requestDto.getImageDetails().isEmpty()) {
             newPackage.setImageUrl(requestDto.getImageDetails().get(0).getUrl());
         }
@@ -72,7 +84,6 @@ public class IPackageTravelService implements PackageTravelService {
                 newPackage.addImage(imageEntity);
             }
         }
-
         return packageTravelRepository.save(newPackage);
     }
 
@@ -88,7 +99,7 @@ public class IPackageTravelService implements PackageTravelService {
         existingPackage.setBasePrice(packageTravel.getBasePrice());
         existingPackage.setShortDescription(packageTravel.getShortDescription());
         existingPackage.setDestination(packageTravel.getDestination());
-        existingPackage.setCategory(packageTravel.getCategory());
+        existingPackage.setCategories(packageTravel.getCategories());
 
         List<PackageImage> updatedImages = packageTravel.getImages();
         if (updatedImages != null && !updatedImages.isEmpty()) {
@@ -121,8 +132,19 @@ public class IPackageTravelService implements PackageTravelService {
     }
 
     @Override
-    public List<PackageTravel> findByCategory(PackageCategory category) {
-        return packageTravelRepository.findByCategory(category);
+    public List<PackageTravel> findByCategoryTitle(String categoryTitle) {
+        return packageTravelRepository.findByCategories_Title(categoryTitle);
     }
 
+    public Optional<Category> findCategoryByTitle(String categoryTitle) {
+        return categoryRepository.findByTitle(categoryTitle);
+}
+
+    public CategoryPackagesDTO getCategoryPackagesDTO(String categoryTitle) {
+        Category category = categoryRepository.findByTitle(categoryTitle)
+                .orElseThrow(() -> new ResourceNotFoundException("Categoría con título '" + categoryTitle + "' no encontrada."));
+        List<PackageTravel> packages = packageTravelRepository.findByCategories_Title(categoryTitle);
+
+        return CategoryPackagesDTO.from(category, packages);
+    }
 }

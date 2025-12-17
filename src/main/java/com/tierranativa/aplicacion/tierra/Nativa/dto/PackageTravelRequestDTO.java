@@ -1,20 +1,29 @@
 package com.tierranativa.aplicacion.tierra.nativa.dto;
 
+import com.tierranativa.aplicacion.tierra.nativa.entity.Category;
+import com.tierranativa.aplicacion.tierra.nativa.entity.PackageTravel;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class PackageTravelRequestDTO {
+
+    private Long id;
 
     @Size(min = 3, max = 100, message = "El nombre debe tener minimo 3 caracteres.")
     @NotBlank(message = "El nombre del paquete es obligatorio.")
@@ -41,7 +50,42 @@ public class PackageTravelRequestDTO {
     @NotBlank(message = "El destino del paquete es obligatorio.")
     private String destination;
 
-    @NotBlank(message = "La categoría del paquete es obligatoria.")
-    private String category;
-}
+    @Size(min = 1, message = "Debe seleccionar al menos una categoría.")
+    @NotNull(message = "La selección de categorías es obligatoria.")
+    private Set<Long> categoryId;
 
+    public static PackageTravelRequestDTO fromEntity(PackageTravel packageTravel, Long categoryIdToExclude) {
+        if (packageTravel == null) {
+            return null;
+        }
+
+        Set<Long> allCategoryIds = packageTravel.getCategories() != null
+                ? packageTravel.getCategories().stream()
+                .map(Category::getId)
+                .collect(Collectors.toSet())
+                : Collections.emptySet();
+
+
+        List<ImageDTO> imageDtoList = packageTravel.getImages() != null ?
+                packageTravel.getImages().stream()
+                        .map(ImageDTO::fromEntity)
+                        .collect(Collectors.toList())
+                : Collections.emptyList();
+
+        ItineraryDetailDTO itineraryDTO = packageTravel.getItineraryDetail() != null ?
+                ItineraryDetailDTO.fromEntity(packageTravel.getItineraryDetail())
+                : null;
+
+
+        return PackageTravelRequestDTO.builder()
+                .id(packageTravel.getId())
+                .name(packageTravel.getName())
+                .basePrice(packageTravel.getBasePrice())
+                .shortDescription(packageTravel.getShortDescription())
+                .destination(packageTravel.getDestination())
+                .imageDetails(imageDtoList)
+                .itineraryDetail(itineraryDTO)
+                .categoryId(allCategoryIds)
+                .build();
+    }
+}

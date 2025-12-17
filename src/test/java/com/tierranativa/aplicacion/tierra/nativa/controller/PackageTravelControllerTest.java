@@ -131,7 +131,7 @@ class PackageTravelControllerTest {
 
     @Test
     void testFindByCategory() throws Exception {
-        when(packageTravelService.findByCategory(PackageCategory.GEOPAISAJES)).thenReturn(List.of(mockPackage));
+        when(packageTravelService.findByCategory(Category.GEOPAISAJES)).thenReturn(List.of(mockPackage));
         mockMvc.perform(get("/paquetes/categoria/GEOPAISAJES")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

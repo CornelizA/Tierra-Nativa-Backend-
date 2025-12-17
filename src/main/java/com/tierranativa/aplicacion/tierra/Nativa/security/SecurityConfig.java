@@ -91,7 +91,9 @@ public class SecurityConfig {
                         auth -> auth
 
                                 .requestMatchers("/auth/**").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/paquetes", "/paquetes/{id}", "/paquetes/categoria/{category}").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/paquetes", "/paquetes/{id}", "/categories/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/categories/public/**").permitAll()
+
                                 .requestMatchers("/admin/**", "/paquetes/admin", "/auth/admin/test").hasAuthority("ADMIN")
                                 .anyRequest().authenticated()
                 )
