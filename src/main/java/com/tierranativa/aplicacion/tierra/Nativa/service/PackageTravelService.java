@@ -3,6 +3,7 @@ package com.tierranativa.aplicacion.tierra.nativa.service;
 import com.tierranativa.aplicacion.tierra.nativa.entity.Category;
 import com.tierranativa.aplicacion.tierra.nativa.entity.PackageTravel;
 import com.tierranativa.aplicacion.tierra.nativa.dto.PackageTravelRequestDTO;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -12,7 +13,7 @@ public interface PackageTravelService {
 
     Optional<PackageTravel> findById(Long id);
 
-    PackageTravel update(PackageTravel packageTravel);
+    PackageTravel update(Long id, PackageTravelRequestDTO updateDto) throws Exception;
 
     void delete(Long id);
 

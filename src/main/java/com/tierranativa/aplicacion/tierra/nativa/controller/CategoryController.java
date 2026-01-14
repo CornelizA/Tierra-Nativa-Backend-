@@ -27,7 +27,7 @@ public class CategoryController {
         this.iPackageTravelService = iPackageTravelService;
     }
 
-    @GetMapping ("/public")
+    @GetMapping("/public")
     public ResponseEntity<List<Category>> findAllCategoriesPublic() {
         return ResponseEntity.ok(iCategoryService.findAll());
     }
@@ -37,7 +37,6 @@ public class CategoryController {
     public ResponseEntity<List<Category>> findAllCategories() {
         return ResponseEntity.ok(iCategoryService.findAll());
     }
-
 
     @PostMapping
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -53,12 +52,8 @@ public class CategoryController {
     @PutMapping
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Category> update(@RequestBody Category category) {
-        try {
-            Category updatedCategory = iCategoryService.update(category);
-            return ResponseEntity.ok(updatedCategory);
-        } catch (ResourceNotFoundException e) {
-            throw e;
-        }
+        Category updatedCategory = iCategoryService.update(category);
+        return ResponseEntity.ok(updatedCategory);
     }
 
     @DeleteMapping("/{id}")
@@ -70,12 +65,9 @@ public class CategoryController {
 
     @GetMapping("/categoria/{categoryTitle}")
     public ResponseEntity<CategoryPackagesDTO> findByCategory(@PathVariable String categoryTitle) {
-
         Category category = iPackageTravelService.findCategoryByTitle(categoryTitle)
                 .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada con título: " + categoryTitle));
-
         List<PackageTravel> packageTravels = iPackageTravelService.findByCategoryTitle(categoryTitle);
-
         CategoryPackagesDTO responseDTO = CategoryPackagesDTO.from(category, packageTravels);
 
         return ResponseEntity.ok(responseDTO);

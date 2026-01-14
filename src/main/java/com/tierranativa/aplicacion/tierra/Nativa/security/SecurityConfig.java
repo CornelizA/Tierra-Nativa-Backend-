@@ -69,7 +69,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        configuration.setAllowedOriginPatterns(List.of("*"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
@@ -91,10 +91,16 @@ public class SecurityConfig {
                         auth -> auth
 
                                 .requestMatchers("/auth/**").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/paquetes", "/paquetes/{id}", "/categories/**").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
+
+                                .requestMatchers(HttpMethod.GET, "/paquetes", "/paquetes/*", "/categories/**", "/characteristics/public/**").permitAll()
+
                                 .requestMatchers(HttpMethod.GET, "/categories/public/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/characteristics/public/**").permitAll()
 
                                 .requestMatchers("/admin/**", "/paquetes/admin", "/auth/admin/test").hasAuthority("ADMIN")
+                                .requestMatchers("/characteristics/**").hasAuthority("ADMIN")
+
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(

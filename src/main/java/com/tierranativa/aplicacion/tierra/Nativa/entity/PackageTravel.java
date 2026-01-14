@@ -1,5 +1,6 @@
 package com.tierranativa.aplicacion.tierra.nativa.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -38,7 +39,17 @@ public class PackageTravel {
     @JoinTable(name = "package_categories", joinColumns =
     @JoinColumn(name = "package_id"), inverseJoinColumns =
     @JoinColumn(name = "category_id"))
-    private Set<Category> categories= new HashSet<>();
+    @Builder.Default
+    private Set<Category> categories = new HashSet<>();
+
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "package_travel_characteristics", joinColumns =
+    @JoinColumn(name = "package_id"), inverseJoinColumns =
+    @JoinColumn(name = "characteristic_id"))
+    @Builder.Default
+    @JsonIgnoreProperties("packages")
+    private Set<PackageCharacteristics> characteristics = new HashSet<>();
 
     private String imageUrl;
 
@@ -51,15 +62,14 @@ public class PackageTravel {
     @JsonManagedReference
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @OneToMany(mappedBy = "packageTravel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    @OneToMany(mappedBy = "packageTravel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<PackageImage> images = new ArrayList<>();
 
     public void addImage(PackageImage image) {
-        if (image == null || images.contains(image)) return;
+        if (image == null) return;
         images.add(image);
-        if (image.getPackageTravel() != this) {
-            image.setPackageTravel(this);
-        }
+        image.setPackageTravel(this);
     }
 
     public void removeImage(PackageImage image) {
@@ -85,7 +95,11 @@ public class PackageTravel {
     }
 
     public void syncImages(List<PackageImage> newImages) {
+        for (PackageImage img : new ArrayList<>(this.images)) {
+            img.setPackageTravel(null);
+        }
         this.images.clear();
+
         if (newImages != null) {
             for (PackageImage image : newImages) {
                 this.addImage(image);

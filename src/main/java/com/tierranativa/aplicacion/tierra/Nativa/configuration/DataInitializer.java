@@ -1,28 +1,26 @@
 package com.tierranativa.aplicacion.tierra.nativa.configuration;
 
-import com.tierranativa.aplicacion.tierra.nativa.entity.Category;
-import com.tierranativa.aplicacion.tierra.nativa.entity.PackageImage;
-import com.tierranativa.aplicacion.tierra.nativa.entity.PackageItineraryDetail;
-import com.tierranativa.aplicacion.tierra.nativa.entity.PackageTravel;
+import com.tierranativa.aplicacion.tierra.nativa.entity.*;
 import com.tierranativa.aplicacion.tierra.nativa.repository.CategoryRepository;
+import com.tierranativa.aplicacion.tierra.nativa.repository.CharacteristicRepository;
 import com.tierranativa.aplicacion.tierra.nativa.repository.PackageTravelRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
 
     private final PackageTravelRepository packageTravelRepository;
     private final CategoryRepository categoryRepository;
+    private final CharacteristicRepository characteristicRepository;
 
-    public DataInitializer(PackageTravelRepository packageTravelRepository, CategoryRepository categoryRepository) {
+    public DataInitializer(PackageTravelRepository packageTravelRepository, CategoryRepository categoryRepository, CharacteristicRepository characteristicRepository) {
         this.packageTravelRepository = packageTravelRepository;
         this.categoryRepository = categoryRepository;
+        this.characteristicRepository = characteristicRepository;
     }
 
     @Override
@@ -72,8 +70,30 @@ public class DataInitializer implements CommandLineRunner {
                 .imageUrl("https://placehold.co/600x400/f06292/FFFFFF?text=Relax+Spa")
                 .build();
 
-        List<Category> allCategories = Arrays.asList(geoPaisajes, litoral, aventura, ecoturismo);
+        List<Category> allCategories = Arrays.asList(geoPaisajes, litoral, aventura, ecoturismo,relajacion);
         categoryRepository.saveAll(allCategories);
+
+        PackageCharacteristics wifi = PackageCharacteristics.builder().title("Wi-Fi").icon("wifi").build();
+        PackageCharacteristics food = PackageCharacteristics.builder().title("Comida incluida").icon("utensils").build();
+        PackageCharacteristics guides = PackageCharacteristics.builder().title("Guías").icon("users").build();
+        PackageCharacteristics insurance = PackageCharacteristics.builder().title("Seguro de viaje").icon("shield-check").build();
+        PackageCharacteristics equipment = PackageCharacteristics.builder().title("Equipo").icon("mountain").build();
+        PackageCharacteristics photography = PackageCharacteristics.builder().title("Fotos").icon("camera").build();
+        PackageCharacteristics transport = PackageCharacteristics.builder().title("Traslados").icon("bus").build();
+        PackageCharacteristics medical = PackageCharacteristics.builder().title("Emergencias").icon("first-aid").build();
+        PackageCharacteristics snacks = PackageCharacteristics.builder().title("Snacks e Hidratación").icon("apple").build();
+        PackageCharacteristics maps = PackageCharacteristics.builder().title("Mapas y GPS").icon("map").build();
+        PackageCharacteristics localFlights = PackageCharacteristics.builder().title("Vuelos Internos").icon("plane").build();
+        PackageCharacteristics entryFees = PackageCharacteristics.builder().title("Entradas Incluidas").icon("ticket").build();
+        PackageCharacteristics accommodation = PackageCharacteristics.builder().title("Alojamiento Incluido").icon("hotel").build();
+        PackageCharacteristics luxuryHotel = PackageCharacteristics.builder().title("Hotel 5 Estrellas").icon("star").build();
+        PackageCharacteristics mountainRefuge = PackageCharacteristics.builder().title("Refugio de Montaña").icon("mountain-snow").build();
+
+        characteristicRepository.saveAll(Arrays.asList(
+                snacks, wifi, food, guides, insurance, equipment, photography, transport, medical,
+                maps, localFlights, entryFees, accommodation, luxuryHotel,
+                mountainRefuge
+        ));
 
         String act1 = "Día 1: Llegada a El Calafate (FTE), traslado al hotel. Día 2: Excursión a las Pasarelas del Glaciar Perito Moreno y Safari Náutico. Día 3: Día de aventura con Minitrekking (opcional) o navegación Big Ice. Día 4: Mañana libre y regreso.";
         String food1 = "Incluye todas las comidas y la hidratación necesaria para la duración del viaje, el plan nutricional está diseñado para variar según la aventura, garantizamos que siempre tendrás el sustento adecuado para disfrutar plenamente de tu viaje.";
@@ -94,6 +114,7 @@ public class DataInitializer implements CommandLineRunner {
         paquete1.setBasePrice(690000.00);
         paquete1.setDestination("El Calafate");
         paquete1.setCategories(Set.of(geoPaisajes));
+        paquete1.setCharacteristics(new HashSet<>(Arrays.asList(food, accommodation, transport, guides, snacks, entryFees, medical, photography)));
         paquete1.addImage(PackageImage.builder().url("https://images.pexels.com/photos/17217435/pexels-photo-17217435.jpeg").principal(true).build());
         paquete1.addImage(PackageImage.builder().url("https://images.pexels.com/photos/27180675/pexels-photo-27180675.jpeg").principal(false).build());
         paquete1.addImage(PackageImage.builder().url("https://images.pexels.com/photos/9224586/pexels-photo-9224586.jpeg").principal(false).build());
@@ -122,6 +143,7 @@ public class DataInitializer implements CommandLineRunner {
         paquete2.setBasePrice(890000.00);
         paquete2.setDestination("Corrientes");
         paquete2.setCategories(Set.of(aventura));
+        paquete2.setCharacteristics(new HashSet<>(Arrays.asList(snacks, food, guides, insurance, equipment, transport, medical, maps, localFlights, mountainRefuge)));
         paquete2.addImage(PackageImage.builder().url("https://images.pexels.com/photos/28359751/pexels-photo-28359751.jpeg").principal(true).build());
         paquete2.addImage(PackageImage.builder().url("https://images.pexels.com/photos/18339547/pexels-photo-18339547.jpeg").principal(false).build());
         paquete2.addImage(PackageImage.builder().url("https://images.pexels.com/photos/13303390/pexels-photo-13303390.jpeg").principal(false).build());
@@ -134,7 +156,7 @@ public class DataInitializer implements CommandLineRunner {
         String food3 = "Incluye todas las comidas y la hidratación necesaria para la duración del viaje, el plan nutricional está diseñado para variar según la aventura, garantizamos que siempre tendrás el sustento adecuado para disfrutar plenamente de tu viaje.";
         PackageItineraryDetail detail3 = PackageItineraryDetail.builder()
                 .duration("4 Días / 3 Noches")
-                .lodgingType("Hotel 4 estrellas en Puerto Iguazú (con piscina).")
+                .lodgingType("Hotel 4 estrellas en Puerto Iguazú.")
                 .transferType("Vuelo a IGR. Buses o taxis para moverse entre el pueblo y el Parque Nacional.")
                 .dailyActivitiesDescription(act3)
                 .foodAndHydrationNotes(food3)
@@ -147,6 +169,7 @@ public class DataInitializer implements CommandLineRunner {
         paquete3.setBasePrice(480000.00);
         paquete3.setDestination("Misiones");
         paquete3.setCategories(Set.of(litoral));
+        paquete3.setCharacteristics(new HashSet<>(Arrays.asList(snacks, wifi, food, guides, photography, transport, localFlights, entryFees, luxuryHotel)));
         paquete3.addImage(PackageImage.builder().url("https://images.pexels.com/photos/1928279/pexels-photo-1928279.jpeg").principal(true).build());
         paquete3.addImage(PackageImage.builder().url("https://images.pexels.com/photos/33688087/pexels-photo-33688087.jpeg").principal(false).build());
         paquete3.addImage(PackageImage.builder().url("https://images.pexels.com/photos/4335018/pexels-photo-4335018.jpeg").principal(false).build());
@@ -173,6 +196,7 @@ public class DataInitializer implements CommandLineRunner {
         paquete4.setBasePrice(450000.00);
         paquete4.setDestination("Corrientes");
         paquete4.setCategories(Set.of(ecoturismo));
+        paquete4.setCharacteristics(new HashSet<>(Arrays.asList(snacks, wifi, food, guides, photography, transport, localFlights,accommodation)));
         paquete4.addImage(PackageImage.builder().url("https://services.meteored.com/img/article/esteros-del-ibera-destino-ideal-para-conectar-con-la-naturaleza-turismo-1734120526464_1280.jpg").principal(true).build());
         paquete4.addImage(PackageImage.builder().url("https://billiken.lat/wp-content/uploads/2022/01/esteros1.jpeg").principal(false).build());
         paquete4.addImage(PackageImage.builder().url("https://images.pexels.com/photos/28939015/pexels-photo-28939015.jpeg").principal(false).build());
@@ -200,6 +224,8 @@ public class DataInitializer implements CommandLineRunner {
         paquete5.setBasePrice(550000.00);
         paquete5.setDestination("Chubut");
         paquete5.setCategories(Set.of(ecoturismo));
+        paquete5.setCharacteristics(new HashSet<>(Arrays.asList(snacks, food, guides, photography, transport,
+                maps, localFlights, entryFees, luxuryHotel)));
         paquete5.addImage(PackageImage.builder().url("https://images.pexels.com/photos/34589749/pexels-photo-34589749.jpeg").principal(true).build());
         paquete5.addImage(PackageImage.builder().url("https://dynamic-media-cdn.tripadvisor.com/media/photo-o/0e/c6/31/66/loberia.jpg?w=900&h=-1&s=1").principal(false).build());
         paquete5.addImage(PackageImage.builder().url("https://cdn.pixabay.com/photo/2020/04/05/10/46/penguin-5005574_1280.jpg").principal(false).build());
@@ -226,6 +252,7 @@ public class DataInitializer implements CommandLineRunner {
         paquete6.setBasePrice(1900000.00);
         paquete6.setDestination("Isla malvinas");
         paquete6.setCategories(Set.of(ecoturismo));
+        paquete6.setCharacteristics(new HashSet<>(Arrays.asList(snacks, food, guides, photography, transport, medical, localFlights, accommodation)));
         paquete6.addImage(PackageImage.builder().url("https://images.pexels.com/photos/7404711/pexels-photo-7404711.jpeg").principal(true).build());
         paquete6.addImage(PackageImage.builder().url("https://images.pexels.com/photos/31307996/pexels-photo-31307996.jpeg").principal(false).build());
         paquete6.addImage(PackageImage.builder().url("https://images.pexels.com/photos/31308018/pexels-photo-31308018.jpeg").principal(false).build());
@@ -253,6 +280,8 @@ public class DataInitializer implements CommandLineRunner {
         paquete7.setBasePrice(350000.00);
         paquete7.setDestination("Chubut");
         paquete7.setCategories(Set.of(geoPaisajes));
+        paquete7.setCharacteristics(new HashSet<>(Arrays.asList(snacks, wifi, food, guides, photography, transport,
+                localFlights, entryFees, luxuryHotel)));
         paquete7.addImage(PackageImage.builder().url("https://images.pexels.com/photos/13430617/pexels-photo-13430617.jpeg").principal(true).build());
         paquete7.addImage(PackageImage.builder().url("https://images.pexels.com/photos/21558614/pexels-photo-21558614.jpeg").principal(false).build());
         paquete7.addImage(PackageImage.builder().url("https://images.pexels.com/photos/13197004/pexels-photo-13197004.jpeg").principal(false).build());
@@ -278,6 +307,8 @@ public class DataInitializer implements CommandLineRunner {
         paquete8.setBasePrice(620000.00);
         paquete8.setDestination("Rio Negro");
         paquete8.setCategories(Set.of(aventura));
+        paquete8.setCharacteristics(new HashSet<>(Arrays.asList(snacks, food, guides, insurance, equipment, photography, transport, medical,
+                maps, localFlights, accommodation, mountainRefuge)));
         paquete8.addImage(PackageImage.builder().url("https://images.pexels.com/photos/13353998/pexels-photo-13353998.jpeg").principal(true).build());
         paquete8.addImage(PackageImage.builder().url("https://images.pexels.com/photos/8197821/pexels-photo-8197821.jpeg").principal(false).build());
         paquete8.addImage(PackageImage.builder().url("https://images.pexels.com/photos/18018254/pexels-photo-18018254.jpeg").principal(false).build());
@@ -303,6 +334,8 @@ public class DataInitializer implements CommandLineRunner {
         paquete9.setBasePrice(750000.00);
         paquete9.setDestination("Tierra del Fuego");
         paquete9.setCategories(Set.of(relajacion));
+        paquete9.setCharacteristics(new HashSet<>(Arrays.asList(snacks, food, guides, insurance, equipment, photography, transport, medical,
+                maps, localFlights, entryFees, luxuryHotel)));
         paquete9.addImage(PackageImage.builder().url("https://images.pexels.com/photos/3822470/pexels-photo-3822470.jpeg").principal(true).build());
         paquete9.addImage(PackageImage.builder().url("https://images.pexels.com/photos/21424675/pexels-photo-21424675.jpeg").principal(false).build());
         paquete9.addImage(PackageImage.builder().url("https://images.pexels.com/photos/3822475/pexels-photo-3822475.jpeg").principal(false).build());
@@ -331,6 +364,7 @@ public class DataInitializer implements CommandLineRunner {
         paquete10.setBasePrice(420000.00);
         paquete10.setDestination("Jujuy / Salta");
         paquete10.setCategories(Set.of(geoPaisajes));
+        paquete10.setCharacteristics(new HashSet<>(Arrays.asList(snacks, food, guides, photography, transport,localFlights, accommodation)));
         paquete10.addImage(PackageImage.builder().url("https://images.pexels.com/photos/33625906/pexels-photo-33625906.jpeg").principal(true).build());
         paquete10.addImage(PackageImage.builder().url("https://images.pexels.com/photos/13555662/pexels-photo-13555662.jpeg").principal(false).build());
         paquete10.addImage(PackageImage.builder().url("https://images.pexels.com/photos/12802851/pexels-photo-12802851.jpeg").principal(false).build());

@@ -9,6 +9,7 @@ import com.tierranativa.aplicacion.tierra.nativa.exception.ResourceAlreadyExists
 import com.tierranativa.aplicacion.tierra.nativa.exception.ResourceNotFoundException;
 import com.tierranativa.aplicacion.tierra.nativa.repository.CategoryRepository;
 import com.tierranativa.aplicacion.tierra.nativa.repository.PackageTravelRepository;
+import com.tierranativa.aplicacion.tierra.nativa.repository.CharacteristicRepository;
 import com.tierranativa.aplicacion.tierra.nativa.service.PackageTravelService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,11 +26,13 @@ public class IPackageTravelService implements PackageTravelService {
 
     private final PackageTravelRepository packageTravelRepository;
     private final CategoryRepository categoryRepository;
+    private final CharacteristicRepository characteristicRepository;
 
     @Autowired
-    public IPackageTravelService(PackageTravelRepository packageTravelRepository, CategoryRepository categoryRepository) {
+    public IPackageTravelService(PackageTravelRepository packageTravelRepository, CategoryRepository categoryRepository, CharacteristicRepository characteristicRepository) {
         this.packageTravelRepository = packageTravelRepository;
         this.categoryRepository = categoryRepository;
+        this.characteristicRepository = characteristicRepository;
     }
 
     @Override
@@ -37,9 +40,9 @@ public class IPackageTravelService implements PackageTravelService {
         return packageTravelRepository.findById(id);
     }
 
+
     @Override
     public PackageTravel registerNewPackage(PackageTravelRequestDTO requestDto) {
-
         if (packageTravelRepository.existsByName(requestDto.getName())) {
             throw new ResourceAlreadyExistsException("El nombre del paquete '" + requestDto.getName() + "' ya está en uso.");
         }
@@ -56,63 +59,117 @@ public class IPackageTravelService implements PackageTravelService {
                 .collect(Collectors.toSet());
         newPackage.setCategories(categories);
 
-        if (requestDto.getImageDetails() != null && !requestDto.getImageDetails().isEmpty()) {
-            newPackage.setImageUrl(requestDto.getImageDetails().get(0).getUrl());
+        if (requestDto.getCharacteristicIds() != null && !requestDto.getCharacteristicIds().isEmpty()) {
+            Set<PackageCharacteristics> characteristics = requestDto.getCharacteristicIds().stream()
+                    .map(id -> characteristicRepository.findById(id)
+                            .orElseThrow(() -> new ResourceNotFoundException("Característica con ID " + id + " no encontrada.")))
+                    .collect(Collectors.toSet());
+            newPackage.setCharacteristics(characteristics);
         }
 
         if (requestDto.getItineraryDetail() != null) {
             ItineraryDetailDTO detailDto = requestDto.getItineraryDetail();
-            PackageItineraryDetail itineraryDetailEntity = PackageItineraryDetail.builder()
-                    .duration(detailDto.getDuration())
-                    .lodgingType(detailDto.getLodgingType())
-                    .transferType(detailDto.getTransferType())
-                    .dailyActivitiesDescription(detailDto.getDailyActivitiesDescription())
-                    .foodAndHydrationNotes(detailDto.getFoodAndHydrationNotes())
-                    .generalRecommendations(detailDto.getGeneralRecommendations())
-                    .build();
+            PackageItineraryDetail itineraryDetailEntity = new PackageItineraryDetail();
 
+            itineraryDetailEntity.setDuration(detailDto.getDuration());
+            itineraryDetailEntity.setLodgingType(detailDto.getLodgingType());
+            itineraryDetailEntity.setTransferType(detailDto.getTransferType());
+            itineraryDetailEntity.setDailyActivitiesDescription(detailDto.getDailyActivitiesDescription());
+            itineraryDetailEntity.setFoodAndHydrationNotes(detailDto.getFoodAndHydrationNotes());
+            itineraryDetailEntity.setGeneralRecommendations(detailDto.getGeneralRecommendations());
             itineraryDetailEntity.setPackageTravel(newPackage);
             newPackage.setItineraryDetail(itineraryDetailEntity);
         }
 
-        if (requestDto.getImageDetails() != null) {
+        if (requestDto.getImageDetails() != null && !requestDto.getImageDetails().isEmpty()) {
             for (ImageDTO imageDto : requestDto.getImageDetails()) {
                 PackageImage imageEntity = PackageImage.builder()
                         .url(imageDto.getUrl())
                         .principal(imageDto.getPrincipal() != null ? imageDto.getPrincipal() : false)
+                        .packageTravel(newPackage)
                         .build();
                 newPackage.addImage(imageEntity);
             }
+
+            String mainUrl = requestDto.getImageDetails().stream()
+                    .filter(img -> img.getPrincipal() != null && img.getPrincipal())
+                    .map(ImageDTO::getUrl)
+                    .findFirst()
+                    .orElse(requestDto.getImageDetails().get(0).getUrl());
+            newPackage.setImageUrl(mainUrl);
         }
+
         return packageTravelRepository.save(newPackage);
     }
 
+
     @Override
-    public PackageTravel update(PackageTravel packageTravel) {
-        if (packageTravelRepository.existsByNameAndIdNot(packageTravel.getName(), packageTravel.getId())) {
-            throw new ResourceAlreadyExistsException("El nombre del paquete '" + packageTravel.getName() + "' ya está en uso por otro producto.");
-        }
-        PackageTravel existingPackage = packageTravelRepository.findById(packageTravel.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("No se pudo actualizar, el Paquete de Viaje con Id: " + packageTravel.getId() + " no fue encontrado."));
+    @Transactional
+    public PackageTravel update(Long id, PackageTravelRequestDTO updateDto) {
+        PackageTravel existingPackage = packageTravelRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("No se pudo actualizar, el Paquete con Id: " + id + " no fue encontrado."));
 
-        existingPackage.setName(packageTravel.getName());
-        existingPackage.setBasePrice(packageTravel.getBasePrice());
-        existingPackage.setShortDescription(packageTravel.getShortDescription());
-        existingPackage.setDestination(packageTravel.getDestination());
-        existingPackage.setCategories(packageTravel.getCategories());
-
-        List<PackageImage> updatedImages = packageTravel.getImages();
-        if (updatedImages != null && !updatedImages.isEmpty()) {
-            existingPackage.setImageUrl(updatedImages.get(0).getUrl());
-        } else {
-            existingPackage.setImageUrl(null);
+        if (packageTravelRepository.existsByNameAndIdNot(updateDto.getName(), id)) {
+            throw new ResourceAlreadyExistsException("El nombre '" + updateDto.getName() + "' ya está en uso por otro paquete.");
         }
-        existingPackage.syncImages(updatedImages);
 
-        PackageItineraryDetail updatedDetail = packageTravel.getItineraryDetail();
-        if (updatedDetail != null) {
-            existingPackage.setItineraryDetail(updatedDetail);
+        existingPackage.setName(updateDto.getName());
+        existingPackage.setBasePrice(updateDto.getBasePrice());
+        existingPackage.setShortDescription(updateDto.getShortDescription());
+        existingPackage.setDestination(updateDto.getDestination());
+
+        Set<Category> categories = updateDto.getCategoryId().stream()
+                .map(catId -> categoryRepository.findById(catId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada: " + catId)))
+                .collect(Collectors.toSet());
+        existingPackage.setCategories(categories);
+
+        if (updateDto.getCharacteristicIds() != null && !updateDto.getCharacteristicIds().isEmpty()) {
+            Set<PackageCharacteristics> characteristics = updateDto.getCharacteristicIds().stream()
+                    .map(charId -> characteristicRepository.findById(charId)
+                            .orElseThrow(() -> new ResourceNotFoundException("Característica no encontrada: " + charId)))
+                    .collect(Collectors.toSet());
+            existingPackage.setCharacteristics(characteristics);
         }
+
+        if (updateDto.getItineraryDetail() != null) {
+            ItineraryDetailDTO detailDto = updateDto.getItineraryDetail();
+            PackageItineraryDetail currentDetail = existingPackage.getItineraryDetail();
+
+            if (currentDetail == null) {
+                currentDetail = new PackageItineraryDetail();
+                currentDetail.setPackageTravel(existingPackage);
+                existingPackage.setItineraryDetail(currentDetail);
+            }
+
+            currentDetail.setDuration(detailDto.getDuration());
+            currentDetail.setLodgingType(detailDto.getLodgingType());
+            currentDetail.setTransferType(detailDto.getTransferType());
+            currentDetail.setDailyActivitiesDescription(detailDto.getDailyActivitiesDescription());
+            currentDetail.setFoodAndHydrationNotes(detailDto.getFoodAndHydrationNotes());
+            currentDetail.setGeneralRecommendations(detailDto.getGeneralRecommendations());
+        }
+
+        if (updateDto.getImageDetails() != null && !updateDto.getImageDetails().isEmpty()) {
+            List<PackageImage> newImages = updateDto.getImageDetails().stream()
+                    .map(dto -> PackageImage.builder()
+                            .id(dto.getId())
+                            .url(dto.getUrl())
+                            .principal(dto.getPrincipal() != null ? dto.getPrincipal() : false)
+                            .packageTravel(existingPackage)
+                            .build())
+                    .collect(Collectors.toList());
+
+            existingPackage.syncImages(newImages);
+
+            String mainUrl = updateDto.getImageDetails().stream()
+                    .filter(img -> img.getPrincipal() != null && img.getPrincipal())
+                    .map(ImageDTO::getUrl)
+                    .findFirst()
+                    .orElse(updateDto.getImageDetails().get(0).getUrl());
+            existingPackage.setImageUrl(mainUrl);
+        }
+
         return packageTravelRepository.save(existingPackage);
     }
 
@@ -138,7 +195,7 @@ public class IPackageTravelService implements PackageTravelService {
 
     public Optional<Category> findCategoryByTitle(String categoryTitle) {
         return categoryRepository.findByTitle(categoryTitle);
-}
+    }
 
     public CategoryPackagesDTO getCategoryPackagesDTO(String categoryTitle) {
         Category category = categoryRepository.findByTitle(categoryTitle)
@@ -147,4 +204,5 @@ public class IPackageTravelService implements PackageTravelService {
 
         return CategoryPackagesDTO.from(category, packages);
     }
+
 }
