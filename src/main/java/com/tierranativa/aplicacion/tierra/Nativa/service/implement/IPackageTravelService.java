@@ -40,13 +40,11 @@ public class IPackageTravelService implements PackageTravelService {
         return packageTravelRepository.findById(id);
     }
 
-
     @Override
     public PackageTravel registerNewPackage(PackageTravelRequestDTO requestDto) {
         if (packageTravelRepository.existsByName(requestDto.getName())) {
             throw new ResourceAlreadyExistsException("El nombre del paquete '" + requestDto.getName() + "' ya está en uso.");
         }
-
         PackageTravel newPackage = new PackageTravel();
         newPackage.setName(requestDto.getName());
         newPackage.setBasePrice(requestDto.getBasePrice());
@@ -102,7 +100,6 @@ public class IPackageTravelService implements PackageTravelService {
         return packageTravelRepository.save(newPackage);
     }
 
-
     @Override
     @Transactional
     public PackageTravel update(Long id, PackageTravelRequestDTO updateDto) {
@@ -112,7 +109,6 @@ public class IPackageTravelService implements PackageTravelService {
         if (packageTravelRepository.existsByNameAndIdNot(updateDto.getName(), id)) {
             throw new ResourceAlreadyExistsException("El nombre '" + updateDto.getName() + "' ya está en uso por otro paquete.");
         }
-
         existingPackage.setName(updateDto.getName());
         existingPackage.setBasePrice(updateDto.getBasePrice());
         existingPackage.setShortDescription(updateDto.getShortDescription());
@@ -169,7 +165,6 @@ public class IPackageTravelService implements PackageTravelService {
                     .orElse(updateDto.getImageDetails().get(0).getUrl());
             existingPackage.setImageUrl(mainUrl);
         }
-
         return packageTravelRepository.save(existingPackage);
     }
 
@@ -193,6 +188,7 @@ public class IPackageTravelService implements PackageTravelService {
         return packageTravelRepository.findByCategories_Title(categoryTitle);
     }
 
+    @Override
     public Optional<Category> findCategoryByTitle(String categoryTitle) {
         return categoryRepository.findByTitle(categoryTitle);
     }

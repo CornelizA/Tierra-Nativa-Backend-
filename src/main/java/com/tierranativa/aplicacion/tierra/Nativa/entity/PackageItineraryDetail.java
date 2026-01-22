@@ -38,7 +38,6 @@ public class PackageItineraryDetail {
     @Column(name = "general_recommendations")
     private String generalRecommendations;
 
-
     @JsonBackReference
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

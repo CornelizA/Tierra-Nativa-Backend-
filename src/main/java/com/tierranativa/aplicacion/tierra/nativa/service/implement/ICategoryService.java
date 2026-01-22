@@ -19,11 +19,12 @@ public class ICategoryService implements CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
-
+    @Override
     public List<Category> findAll() {
         return categoryRepository.findAll();
     }
 
+    @Override
     public Category save(Category category) {
         if (categoryRepository.findByTitle(category.getTitle()).isPresent()) {
             throw new IllegalArgumentException("Ya existe una categoría con ese título: " + category.getTitle());

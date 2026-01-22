@@ -4,9 +4,12 @@ import com.tierranativa.aplicacion.tierra.nativa.entity.*;
 import com.tierranativa.aplicacion.tierra.nativa.repository.CategoryRepository;
 import com.tierranativa.aplicacion.tierra.nativa.repository.CharacteristicRepository;
 import com.tierranativa.aplicacion.tierra.nativa.repository.PackageTravelRepository;
+import com.tierranativa.aplicacion.tierra.nativa.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import com.tierranativa.aplicacion.tierra.nativa.entity.RoleLogin;
 
 import java.util.*;
 
@@ -16,16 +19,35 @@ public class DataInitializer implements CommandLineRunner {
     private final PackageTravelRepository packageTravelRepository;
     private final CategoryRepository categoryRepository;
     private final CharacteristicRepository characteristicRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public DataInitializer(PackageTravelRepository packageTravelRepository, CategoryRepository categoryRepository, CharacteristicRepository characteristicRepository) {
+    public DataInitializer(PackageTravelRepository packageTravelRepository, CategoryRepository categoryRepository, CharacteristicRepository characteristicRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.packageTravelRepository = packageTravelRepository;
         this.categoryRepository = categoryRepository;
         this.characteristicRepository = characteristicRepository;
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
-
     @Override
     @Transactional
     public void run(String... args) throws Exception {
+
+        String adminEmail = "tierranativa.dev@gmail.com";
+        if (userRepository.findByEmail(adminEmail).isEmpty()){
+            System.out.println("Creando cuenta de SuperUsuario...");
+            User admin= User.builder()
+                    .firstName("Super")
+                    .lastName("Usuario")
+                    .email(adminEmail)
+                    .password(passwordEncoder.encode("Tierranativa24$"))
+                    .role(RoleLogin.ADMIN)
+                    .enabled(true)
+                    .build();
+            userRepository.save(admin);
+            System.out.println("✅ Cuenta de SuperUsuario creada con éxito.");
+        }
+
         if (packageTravelRepository.count() == 0) {
             System.out.println("Cargando datos iniciales de paquetes de viaje...");
 
@@ -43,31 +65,31 @@ public class DataInitializer implements CommandLineRunner {
         Category geoPaisajes = Category.builder()
                 .title("GEOPAISAJES")
                 .description("Viajes enfocados en formaciones geológicas, glaciares y paisajes naturales únicos.")
-                .imageUrl("https://placehold.co/600x400/0077c2/FFFFFF?text=GeoPaisajes")
+                .imageUrl("https://images.pexels.com/photos/259802/pexels-photo-259802.jpeg")
                 .build();
 
         Category litoral = Category.builder()
                 .title("LITORAL")
                 .description("Experiencias en costas, playas, y ecosistemas marinos. Ideal para avistamiento de fauna.")
-                .imageUrl("https://placehold.co/600x400/00bcd4/FFFFFF?text=Litoral+Costa")
+                .imageUrl("https://images.pexels.com/photos/17676580/pexels-photo-17676580.jpeg")
                 .build();
 
         Category aventura = Category.builder()
                 .title("AVENTURA")
                 .description("Actividades de alto impacto y adrenalina como deportes extremos, escalada o rafting.")
-                .imageUrl("https://placehold.co/600x400/ff9800/FFFFFF?text=Aventura+Extrema")
+                .imageUrl("https://images.pexels.com/photos/13659148/pexels-photo-13659148.jpeg")
                 .build();
 
         Category ecoturismo = Category.builder()
                 .title("ECOTURISMO")
                 .description("Exploración y conservación de áreas naturales, priorizando la sostenibilidad y la educación ambiental.")
-                .imageUrl("https://placehold.co/600x400/4caf50/FFFFFF?text=Ecoturismo+Verde")
+                .imageUrl("https://images.pexels.com/photos/13197004/pexels-photo-13197004.jpeg")
                 .build();
 
         Category relajacion = Category.builder()
                 .title("RELAJACION")
                 .description("Destinos y actividades centradas en el bienestar, spa, termas y descanso profundo.")
-                .imageUrl("https://placehold.co/600x400/f06292/FFFFFF?text=Relax+Spa")
+                .imageUrl("https://images.pexels.com/photos/29581846/pexels-photo-29581846.jpeg")
                 .build();
 
         List<Category> allCategories = Arrays.asList(geoPaisajes, litoral, aventura, ecoturismo,relajacion);

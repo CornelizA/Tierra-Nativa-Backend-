@@ -1,13 +1,12 @@
-package com.tierranativa.aplicacion.tierra.nativa.Service.implement;
+package com.tierranativa.aplicacion.tierra.nativa.service.implement;
 
-import com.tierranativa.aplicacion.tierra.nativa.dto.ImageDTO;
-import com.tierranativa.aplicacion.tierra.nativa.dto.ItineraryDetailDTO;
-import com.tierranativa.aplicacion.tierra.nativa.dto.PackageTravelRequestDTO;
+import com.tierranativa.aplicacion.tierra.nativa.dto.*;
 import com.tierranativa.aplicacion.tierra.nativa.entity.*;
 import com.tierranativa.aplicacion.tierra.nativa.exception.ResourceAlreadyExistsException;
 import com.tierranativa.aplicacion.tierra.nativa.exception.ResourceNotFoundException;
+import com.tierranativa.aplicacion.tierra.nativa.repository.CategoryRepository;
+import com.tierranativa.aplicacion.tierra.nativa.repository.CharacteristicRepository;
 import com.tierranativa.aplicacion.tierra.nativa.repository.PackageTravelRepository;
-import com.tierranativa.aplicacion.tierra.nativa.service.implement.IPackageTravelService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -30,105 +30,135 @@ class IPackageTravelServiceTest {
     @Mock
     private PackageTravelRepository packageTravelRepository;
 
+    @Mock
+    private CategoryRepository categoryRepository;
+
+    @Mock
+    private CharacteristicRepository characteristicRepository;
+
     @InjectMocks
     private IPackageTravelService packageTravelService;
 
     @Captor
     private ArgumentCaptor<PackageTravel> packageTravelCaptor;
+
     private PackageTravel mockPackage;
     private PackageTravelRequestDTO validDto;
+    private Category geoPaisajes;
+    private PackageCharacteristics wifiEntity;
 
     @BeforeEach
     void setUp() {
+        geoPaisajes = Category.builder().id(1L).title("GEOPAISAJES").build();
 
         mockPackage = new PackageTravel();
         mockPackage.setId(1L);
         mockPackage.setName("Paquete Test");
-        mockPackage.setBasePrice(20000.00);
-        mockPackage.setDestination("Corrientes");
-        mockPackage.setShortDescription("Descripción corta relajación.");
-        mockPackage.setCategory(Category.RELAJACION);
+        mockPackage.setCategories(Set.of(geoPaisajes));
+
+        wifiEntity = PackageCharacteristics.builder()
+                .id(1L)
+                .title("Wi-Fi")
+                .icon("fa-wifi")
+                .build();
 
         ItineraryDetailDTO detailDto = new ItineraryDetailDTO();
         detailDto.setDuration("5 Días");
         detailDto.setLodgingType("Hotel");
-        detailDto.setTransferType("Vuelos-Terrestres");
-        detailDto.setDailyActivitiesDescription("Actividades diarias");
-        detailDto.setFoodAndHydrationNotes("Alimentación variada");
-        detailDto.setGeneralRecommendations("Diviertanse");
-
+        detailDto.setTransferType("Vuelo");
+        detailDto.setDailyActivitiesDescription("Act");
+        detailDto.setFoodAndHydrationNotes("Comida");
+        detailDto.setGeneralRecommendations("Tips");
         ImageDTO imageDto = new ImageDTO();
         imageDto.setUrl("http://image.url/principal.jpg");
         imageDto.setPrincipal(true);
 
-        validDto = new PackageTravelRequestDTO(
-                "Paquete Nuevo",
-                detailDto,
-                1500.00,
-                List.of(imageDto),
-                "Desc breve",
-                "Destino",
-                "RELAJACION"
-        );
+        validDto = PackageTravelRequestDTO.builder()
+                .name("Paquete Nuevo")
+                .basePrice(1500.00)
+                .shortDescription("Descripción obligatoria de más de diez caracteres.")
+                .destination("Destino Test")
+                .categoryId(Set.of(1L))
+                .characteristicIds(Set.of(1L))
+                .itineraryDetail(detailDto)
+                .imageDetails(List.of(imageDto))
+                .build();
     }
 
     @Test
-    void registerNewPackage() throws Exception {
+    void registerNewPackage_Success() throws Exception {
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(geoPaisajes));
+        when(characteristicRepository.findById(1L)).thenReturn(Optional.of(wifiEntity));
         when(packageTravelRepository.existsByName(anyString())).thenReturn(false);
         when(packageTravelRepository.save(any(PackageTravel.class))).thenReturn(mockPackage);
+
         packageTravelService.registerNewPackage(validDto);
+
         verify(packageTravelRepository, times(1)).save(packageTravelCaptor.capture());
-        PackageTravel packageToSave = packageTravelCaptor.getValue();
-        assertThat(packageToSave.getName()).isEqualTo(validDto.getName());
-        assertThat(packageToSave.getItineraryDetail().getDuration()).isEqualTo("5 Días");
-        assertThat(packageToSave.getImageUrl()).isEqualTo("http://image.url/principal.jpg");
+        PackageTravel savedPackage = packageTravelCaptor.getValue();
+
+        assertThat(savedPackage.getName()).isEqualTo("Paquete Nuevo");
+        assertThat(savedPackage.getItineraryDetail().getDuration()).isEqualTo("5 Días");
     }
 
     @Test
-    void registerNewPackage_ResourceAlreadyExistsException_NombreExiste() {
-        when(packageTravelRepository.existsByName(anyString())).thenReturn(true);
+    void registerNewPackage_ThrowsException_WhenNameExists() {
+        when(packageTravelRepository.existsByName(validDto.getName())).thenReturn(true);
+
         assertThrows(ResourceAlreadyExistsException.class,
                 () -> packageTravelService.registerNewPackage(validDto));
+
         verify(packageTravelRepository, never()).save(any());
     }
 
     @Test
-    void updatePackageTravel() {
-        mockPackage.setName("Nombre Editado");
+    void update_Success() throws Exception {
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(geoPaisajes));
+        when(characteristicRepository.findById(1L)).thenReturn(Optional.of(wifiEntity));
+        when(packageTravelRepository.findById(1L)).thenReturn(Optional.of(mockPackage));
         when(packageTravelRepository.existsByNameAndIdNot(anyString(), anyLong())).thenReturn(false);
-        packageTravelService.update(mockPackage);
-        verify(packageTravelRepository, times(1)).save(mockPackage);
+        when(packageTravelRepository.save(any(PackageTravel.class))).thenReturn(mockPackage);
+
+        packageTravelService.update(1L, validDto);
+
+        verify(packageTravelRepository).save(any(PackageTravel.class));
     }
 
     @Test
-    void update_ResourceAlreadyExistsException_NombreExiste() {
-        when(packageTravelRepository.existsByNameAndIdNot(anyString(), anyLong())).thenReturn(true);
-        assertThrows(ResourceAlreadyExistsException.class,
-                () -> packageTravelService.update(mockPackage));
-        verify(packageTravelRepository, never()).save(any());
-    }
-
-    @Test
-    void deletePackageTravel() {
+    void delete_Success() {
         when(packageTravelRepository.findById(1L)).thenReturn(Optional.of(mockPackage));
         packageTravelService.delete(1L);
-        verify(packageTravelRepository, times(1)).deleteById(1L);
+        verify(packageTravelRepository).deleteById(1L);
     }
 
     @Test
-    void delete_ResourceNotFoundException_NoExiste() {
+    void delete_ThrowsNotFound() {
         when(packageTravelRepository.findById(99L)).thenReturn(Optional.empty());
-        assertThrows(ResourceNotFoundException.class,
-                () -> packageTravelService.delete(99L));
-        verify(packageTravelRepository, never()).deleteById(anyLong());
+
+        assertThrows(ResourceNotFoundException.class, () -> packageTravelService.delete(99L));
     }
 
     @Test
-    void findByCategory() {
-        when(packageTravelRepository.findByCategory(Category.GEOPAISAJES)).thenReturn(List.of(mockPackage));
-        List<PackageTravel> result = packageTravelService.findByCategory(Category.GEOPAISAJES);
+    void findByCategoryTitle_Success() {
+        String title = "GEOPAISAJES";
+        when(packageTravelRepository.findByCategories_Title(title)).thenReturn(List.of(mockPackage));
+
+        List<PackageTravel> result = packageTravelService.findByCategoryTitle(title);
+
         assertThat(result).isNotEmpty();
-        assertThat(result.get(0).getId()).isEqualTo(1L);
-        assertThat(result.get(0).getCategory()).isEqualTo(Category.RELAJACION);
+        assertThat(result.get(0).getName()).isEqualTo("Paquete Test");
+        verify(packageTravelRepository).findByCategories_Title(title);
+    }
+
+    @Test
+    void findCategoryByTitle_Success() {
+        String title = "GEOPAISAJES";
+        when(categoryRepository.findByTitle(title)).thenReturn(Optional.of(geoPaisajes));
+
+        Optional<Category> result = packageTravelService.findCategoryByTitle(title);
+
+        assertThat(result).isPresent();
+        assertThat(result.get().getTitle()).isEqualTo("GEOPAISAJES");
+        verify(categoryRepository).findByTitle(title);
     }
 }

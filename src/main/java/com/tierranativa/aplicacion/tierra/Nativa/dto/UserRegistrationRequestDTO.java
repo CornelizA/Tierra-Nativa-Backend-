@@ -33,6 +33,10 @@ public class UserRegistrationRequestDTO {
             message = "La contraseña debe tener al menos 8 caracteres, incluir al menos una letra mayúscula y minúscula, un dígito (0-9), y un símbolo especial ")
     @Size(min = 8, max = 50)
     private String password;
+
+    public void setEmail(String email) {
+        this.email = (email != null) ? email.trim().toLowerCase() : null;
+    }
 }
 
 

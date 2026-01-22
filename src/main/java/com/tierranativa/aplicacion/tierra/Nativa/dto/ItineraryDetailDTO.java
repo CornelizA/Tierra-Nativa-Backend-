@@ -3,10 +3,14 @@ package com.tierranativa.aplicacion.tierra.nativa.dto;
 import com.tierranativa.aplicacion.tierra.nativa.entity.PackageItineraryDetail;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class ItineraryDetailDTO {
 
@@ -33,7 +37,6 @@ public class ItineraryDetailDTO {
     @Size(min = 10, max = 400, message = "El texto debe tener minimo 10 caracteres.")
     @NotBlank(message = "Las recomendaciones del paquete son obligatorias.")
     private String generalRecommendations;
-
 
     public static ItineraryDetailDTO fromEntity(PackageItineraryDetail detail) {
         if (detail == null) {

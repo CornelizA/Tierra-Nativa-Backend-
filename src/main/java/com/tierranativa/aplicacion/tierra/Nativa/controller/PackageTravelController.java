@@ -25,7 +25,6 @@ public class PackageTravelController {
         this.iPackageTravelService = iPackageTravelService;
     }
 
-
     @PostMapping
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<PackageTravelRequestDTO> registerPackage(@Validated @RequestBody PackageTravelRequestDTO packageDTO) {

@@ -23,7 +23,6 @@ public class CategoryPackagesDTO {
         if (category == null) {
             return CategoryPackagesDTO.builder().categoryDetails(null).packages(List.of()).build();
         }
-
         final Long categoryIdToExclude = category.getId();
 
         List<PackageTravelRequestDTO> dtoList = packageTravels.stream()

@@ -18,9 +18,10 @@ public class UserService {
 
     @Transactional
     public User updateRole(UserRoleUpdateRequestDTO request) {
+        String emailToSearch = request.getEmail().trim().toLowerCase();
 
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con email: " + request.getEmail()));
+        User user = userRepository.findByEmail(emailToSearch)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con email: " + emailToSearch));
 
         user.setRole(request.getNewRole());
         return userRepository.save(user);
