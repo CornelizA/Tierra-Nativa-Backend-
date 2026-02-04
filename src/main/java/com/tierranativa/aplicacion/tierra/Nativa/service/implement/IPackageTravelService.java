@@ -7,6 +7,7 @@ import com.tierranativa.aplicacion.tierra.nativa.dto.PackageTravelRequestDTO;
 import com.tierranativa.aplicacion.tierra.nativa.entity.*;
 import com.tierranativa.aplicacion.tierra.nativa.exception.ResourceAlreadyExistsException;
 import com.tierranativa.aplicacion.tierra.nativa.exception.ResourceNotFoundException;
+import com.tierranativa.aplicacion.tierra.nativa.repository.BookingRepository;
 import com.tierranativa.aplicacion.tierra.nativa.repository.CategoryRepository;
 import com.tierranativa.aplicacion.tierra.nativa.repository.PackageTravelRepository;
 import com.tierranativa.aplicacion.tierra.nativa.repository.CharacteristicRepository;
@@ -27,12 +28,14 @@ public class IPackageTravelService implements PackageTravelService {
     private final PackageTravelRepository packageTravelRepository;
     private final CategoryRepository categoryRepository;
     private final CharacteristicRepository characteristicRepository;
+    private final BookingRepository bookingRepository;
 
     @Autowired
-    public IPackageTravelService(PackageTravelRepository packageTravelRepository, CategoryRepository categoryRepository, CharacteristicRepository characteristicRepository) {
+    public IPackageTravelService(PackageTravelRepository packageTravelRepository, CategoryRepository categoryRepository, CharacteristicRepository characteristicRepository, BookingRepository bookingRepository) {
         this.packageTravelRepository = packageTravelRepository;
         this.categoryRepository = categoryRepository;
         this.characteristicRepository = characteristicRepository;
+        this.bookingRepository = bookingRepository;
     }
 
     @Override
@@ -41,10 +44,12 @@ public class IPackageTravelService implements PackageTravelService {
     }
 
     @Override
-    public PackageTravel registerNewPackage(PackageTravelRequestDTO requestDto) {
+    @Transactional
+    public PackageTravel registerNewPackage(PackageTravelRequestDTO requestDto, User admin) throws Exception {
         if (packageTravelRepository.existsByName(requestDto.getName())) {
             throw new ResourceAlreadyExistsException("El nombre del paquete '" + requestDto.getName() + "' ya está en uso.");
         }
+
         PackageTravel newPackage = new PackageTravel();
         newPackage.setName(requestDto.getName());
         newPackage.setBasePrice(requestDto.getBasePrice());
@@ -68,7 +73,6 @@ public class IPackageTravelService implements PackageTravelService {
         if (requestDto.getItineraryDetail() != null) {
             ItineraryDetailDTO detailDto = requestDto.getItineraryDetail();
             PackageItineraryDetail itineraryDetailEntity = new PackageItineraryDetail();
-
             itineraryDetailEntity.setDuration(detailDto.getDuration());
             itineraryDetailEntity.setLodgingType(detailDto.getLodgingType());
             itineraryDetailEntity.setTransferType(detailDto.getTransferType());
@@ -88,7 +92,6 @@ public class IPackageTravelService implements PackageTravelService {
                         .build();
                 newPackage.addImage(imageEntity);
             }
-
             String mainUrl = requestDto.getImageDetails().stream()
                     .filter(img -> img.getPrincipal() != null && img.getPrincipal())
                     .map(ImageDTO::getUrl)
@@ -97,30 +100,48 @@ public class IPackageTravelService implements PackageTravelService {
             newPackage.setImageUrl(mainUrl);
         }
 
-        return packageTravelRepository.save(newPackage);
+        PackageTravel savedPackage = packageTravelRepository.save(newPackage);
+
+        if (requestDto.getAvailabilityBlocks() != null && !requestDto.getAvailabilityBlocks().isEmpty()) {
+            List<Booking> blocks = requestDto.getAvailabilityBlocks().stream()
+                    .map(blockDto -> Booking.builder()
+                            .startDate(blockDto.getStartDate())
+                            .endDate(blockDto.getEndDate())
+                            .packageTravel(savedPackage)
+                            .user(admin)
+                            .status("CONFIRMED")
+                            .build())
+                    .collect(Collectors.toList());
+            bookingRepository.saveAll(blocks);
+        }
+
+        return savedPackage;
     }
 
     @Override
     @Transactional
-    public PackageTravel update(Long id, PackageTravelRequestDTO updateDto) {
+    public PackageTravel update(Long id, PackageTravelRequestDTO updateDto, User admin) throws Exception {
         PackageTravel existingPackage = packageTravelRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("No se pudo actualizar, el Paquete con Id: " + id + " no fue encontrado."));
+                .orElseThrow(() -> new ResourceNotFoundException("Paquete con Id: " + id + " no encontrado."));
 
-        if (packageTravelRepository.existsByNameAndIdNot(updateDto.getName(), id)) {
-            throw new ResourceAlreadyExistsException("El nombre '" + updateDto.getName() + "' ya está en uso por otro paquete.");
+        if (updateDto.getName() != null && packageTravelRepository.existsByNameAndIdNot(updateDto.getName(), id)) {
+            throw new ResourceAlreadyExistsException("El nombre '" + updateDto.getName() + "' ya está en uso.");
         }
-        existingPackage.setName(updateDto.getName());
-        existingPackage.setBasePrice(updateDto.getBasePrice());
-        existingPackage.setShortDescription(updateDto.getShortDescription());
-        existingPackage.setDestination(updateDto.getDestination());
 
-        Set<Category> categories = updateDto.getCategoryId().stream()
-                .map(catId -> categoryRepository.findById(catId)
-                        .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada: " + catId)))
-                .collect(Collectors.toSet());
-        existingPackage.setCategories(categories);
+        if (updateDto.getName() != null) existingPackage.setName(updateDto.getName());
+        if (updateDto.getBasePrice() != null) existingPackage.setBasePrice(updateDto.getBasePrice());
+        if (updateDto.getShortDescription() != null) existingPackage.setShortDescription(updateDto.getShortDescription());
+        if (updateDto.getDestination() != null) existingPackage.setDestination(updateDto.getDestination());
 
-        if (updateDto.getCharacteristicIds() != null && !updateDto.getCharacteristicIds().isEmpty()) {
+        if (updateDto.getCategoryId() != null) {
+            Set<Category> categories = updateDto.getCategoryId().stream()
+                    .map(catId -> categoryRepository.findById(catId)
+                            .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada: " + catId)))
+                    .collect(Collectors.toSet());
+            existingPackage.setCategories(categories);
+        }
+
+        if (updateDto.getCharacteristicIds() != null) {
             Set<PackageCharacteristics> characteristics = updateDto.getCharacteristicIds().stream()
                     .map(charId -> characteristicRepository.findById(charId)
                             .orElseThrow(() -> new ResourceNotFoundException("Característica no encontrada: " + charId)))
@@ -128,43 +149,25 @@ public class IPackageTravelService implements PackageTravelService {
             existingPackage.setCharacteristics(characteristics);
         }
 
-        if (updateDto.getItineraryDetail() != null) {
-            ItineraryDetailDTO detailDto = updateDto.getItineraryDetail();
-            PackageItineraryDetail currentDetail = existingPackage.getItineraryDetail();
+        if (updateDto.getAvailabilityBlocks() != null) {
+            List<Booking> currentBookings = bookingRepository.findByPackageTravelId(id);
+            List<Booking> manualBlocks = currentBookings.stream()
+                    .filter(b -> "CONFIRMED".equals(b.getStatus()))
+                    .collect(Collectors.toList());
+            bookingRepository.deleteAll(manualBlocks);
 
-            if (currentDetail == null) {
-                currentDetail = new PackageItineraryDetail();
-                currentDetail.setPackageTravel(existingPackage);
-                existingPackage.setItineraryDetail(currentDetail);
-            }
-
-            currentDetail.setDuration(detailDto.getDuration());
-            currentDetail.setLodgingType(detailDto.getLodgingType());
-            currentDetail.setTransferType(detailDto.getTransferType());
-            currentDetail.setDailyActivitiesDescription(detailDto.getDailyActivitiesDescription());
-            currentDetail.setFoodAndHydrationNotes(detailDto.getFoodAndHydrationNotes());
-            currentDetail.setGeneralRecommendations(detailDto.getGeneralRecommendations());
-        }
-
-        if (updateDto.getImageDetails() != null && !updateDto.getImageDetails().isEmpty()) {
-            List<PackageImage> newImages = updateDto.getImageDetails().stream()
-                    .map(dto -> PackageImage.builder()
-                            .id(dto.getId())
-                            .url(dto.getUrl())
-                            .principal(dto.getPrincipal() != null ? dto.getPrincipal() : false)
+            List<Booking> newBlocks = updateDto.getAvailabilityBlocks().stream()
+                    .map(blockDto -> Booking.builder()
+                            .startDate(blockDto.getStartDate())
+                            .endDate(blockDto.getEndDate())
                             .packageTravel(existingPackage)
+                            .user(admin)
+                            .status("CONFIRMED")
                             .build())
                     .collect(Collectors.toList());
-
-            existingPackage.syncImages(newImages);
-
-            String mainUrl = updateDto.getImageDetails().stream()
-                    .filter(img -> img.getPrincipal() != null && img.getPrincipal())
-                    .map(ImageDTO::getUrl)
-                    .findFirst()
-                    .orElse(updateDto.getImageDetails().get(0).getUrl());
-            existingPackage.setImageUrl(mainUrl);
+            bookingRepository.saveAll(newBlocks);
         }
+
         return packageTravelRepository.save(existingPackage);
     }
 

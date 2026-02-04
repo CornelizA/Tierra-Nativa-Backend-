@@ -93,12 +93,20 @@ public class SecurityConfig {
                                 .requestMatchers("/auth/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
 
-                                .requestMatchers(HttpMethod.GET, "/paquetes", "/paquetes/*", "/categories/**", "/characteristics/public/**").permitAll()
+                                .requestMatchers(HttpMethod.GET,
+                                        "/paquetes/**",
+                                        "/categories/**",
+                                        "/characteristics/**",
+                                        "/search/**",
+                                        "/reviews/**").permitAll()
 
-                                .requestMatchers(HttpMethod.GET, "/categories/public/**").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/characteristics/public/**").permitAll()
+                                .requestMatchers("/favorites/**").authenticated()
+                                .requestMatchers("/bookings/**").authenticated()
+                                .requestMatchers(HttpMethod.POST, "/reviews/**").authenticated()
 
-                                .requestMatchers("/admin/**", "/paquetes/admin", "/auth/admin/test").hasAuthority("ADMIN")
+                                .requestMatchers("/admin/**", "/auth/admin/test").hasAuthority("ADMIN")
+                                .requestMatchers("/paquetes/**").hasAuthority("ADMIN")
+                                .requestMatchers("/categories/**").hasAuthority("ADMIN")
                                 .requestMatchers("/characteristics/**").hasAuthority("ADMIN")
 
                                 .anyRequest().authenticated()

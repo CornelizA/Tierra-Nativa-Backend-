@@ -21,8 +21,7 @@ public class AdminController {
     @PutMapping("/role")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<User> updateRole(@Valid @RequestBody UserRoleUpdateRequestDTO request) {
-        User updatedUser = userService.updateRole(request);
-        return ResponseEntity.ok(updatedUser);
+        return ResponseEntity.ok(userService.updateRole(request));
     }
 
     @GetMapping

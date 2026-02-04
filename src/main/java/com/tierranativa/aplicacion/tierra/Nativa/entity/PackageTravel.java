@@ -16,6 +16,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "package_travel")
 public class PackageTravel {
 
@@ -35,13 +36,16 @@ public class PackageTravel {
     @Column(name = "destination", nullable = false)
     private String destination;
 
+    @Column(name = "average_rating")
+    @Builder.Default
+    private Double averageRating = 0.0;
+
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(name = "package_categories", joinColumns =
     @JoinColumn(name = "package_id"), inverseJoinColumns =
     @JoinColumn(name = "category_id"))
     @Builder.Default
     private Set<Category> categories = new HashSet<>();
-
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "package_travel_characteristics", joinColumns =
@@ -51,6 +55,11 @@ public class PackageTravel {
     @JsonIgnoreProperties("packages")
     private Set<PackageCharacteristics> characteristics = new HashSet<>();
 
+    @OneToMany(mappedBy = "packageTravel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("packageTravel")
+    @Builder.Default
+    private List<Review> reviews = new ArrayList<>();
+
     private String imageUrl;
 
     @JsonManagedReference
@@ -58,6 +67,16 @@ public class PackageTravel {
     @EqualsAndHashCode.Exclude
     @OneToOne(mappedBy = "packageTravel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private PackageItineraryDetail itineraryDetail;
+
+    @OneToMany(mappedBy = "packageTravel", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("packageTravel")
+    @Builder.Default
+    private List<Favorite> favorites = new ArrayList<>();
+
+    @OneToMany(mappedBy = "packageTravel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("packageTravel")
+    @Builder.Default
+    private List<Booking> bookings = new ArrayList<>();
 
     @JsonManagedReference
     @ToString.Exclude

@@ -59,8 +59,23 @@ public class PackageTravelRequestDTO {
     @NotNull(message = "La selección de características es obligatoria.")
     private Set<Long> characteristicIds;
 
-    public static PackageTravelRequestDTO fromEntity(PackageTravel packageTravel, Long excludeCategoryId) {
+    private Double averageRating;
+
+    private List<ReviewDTO> reviews;
+
+    private Boolean isFavorite;
+
+    private List<AvailabilityBlockDTO> availabilityBlocks;
+
+    public static PackageTravelRequestDTO fromEntity(PackageTravel packageTravel, Long excludeCategoryId, Boolean isFavoriteStatus) {
         if (packageTravel == null) return null;
+
+        List<AvailabilityBlockDTO> blocks = (packageTravel.getBookings() != null)
+                ? packageTravel.getBookings().stream()
+                .filter(b -> "CONFIRMED".equals(b.getStatus()))
+                .map(b -> new AvailabilityBlockDTO(b.getStartDate(), b.getEndDate()))
+                .collect(Collectors.toList())
+                : Collections.emptyList();
 
         Set<Long> filteredCategoryIds = packageTravel.getCategories() != null
                 ? packageTravel.getCategories().stream()
@@ -75,15 +90,17 @@ public class PackageTravelRequestDTO {
                 .collect(Collectors.toSet())
                 : Collections.emptySet();
 
-        List<ImageDTO> imageDtoList = packageTravel.getImages() != null
-                ? packageTravel.getImages().stream()
-                .map(ImageDTO::fromEntity)
+        List<ReviewDTO> reviewDtos = packageTravel.getReviews() != null
+                ? packageTravel.getReviews().stream()
+                .map(review -> ReviewDTO.builder()
+                        .id(review.getId())
+                        .score(review.getScore())
+                        .comment(review.getComment())
+                        .date(review.getCreatedAt())
+                        .userName(review.getUser().getFirstName() + " " + review.getUser().getLastName())
+                        .build())
                 .collect(Collectors.toList())
                 : Collections.emptyList();
-
-        ItineraryDetailDTO itineraryDTO = packageTravel.getItineraryDetail() != null
-                ? ItineraryDetailDTO.fromEntity(packageTravel.getItineraryDetail())
-                : null;
 
         return PackageTravelRequestDTO.builder()
                 .id(packageTravel.getId())
@@ -91,14 +108,22 @@ public class PackageTravelRequestDTO {
                 .basePrice(packageTravel.getBasePrice())
                 .shortDescription(packageTravel.getShortDescription())
                 .destination(packageTravel.getDestination())
-                .imageDetails(imageDtoList)
-                .itineraryDetail(itineraryDTO)
+                .imageDetails(packageTravel.getImages() != null ? packageTravel.getImages().stream().map(ImageDTO::fromEntity).toList() : List.of())
+                .itineraryDetail(packageTravel.getItineraryDetail() != null ? ItineraryDetailDTO.fromEntity(packageTravel.getItineraryDetail()) : null)
                 .categoryId(filteredCategoryIds)
                 .characteristicIds(charIds)
+                .averageRating(packageTravel.getAverageRating() != null ? packageTravel.getAverageRating() : 0.0)
+                .reviews(reviewDtos)
+                .isFavorite(isFavoriteStatus != null ? isFavoriteStatus : false)
+                .availabilityBlocks(blocks)
                 .build();
     }
 
+    public static PackageTravelRequestDTO fromEntity(PackageTravel packageTravel, Long excludeCategoryId) {
+        return fromEntity(packageTravel, excludeCategoryId, false);
+    }
+
     public static PackageTravelRequestDTO fromEntity(PackageTravel packageTravel) {
-        return fromEntity(packageTravel, null);
+        return fromEntity(packageTravel, null, false);
     }
 }

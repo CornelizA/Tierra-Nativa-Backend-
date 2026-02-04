@@ -1,16 +1,15 @@
 package com.tierranativa.aplicacion.tierra.nativa.configuration;
 
 import com.tierranativa.aplicacion.tierra.nativa.entity.*;
-import com.tierranativa.aplicacion.tierra.nativa.repository.CategoryRepository;
-import com.tierranativa.aplicacion.tierra.nativa.repository.CharacteristicRepository;
-import com.tierranativa.aplicacion.tierra.nativa.repository.PackageTravelRepository;
-import com.tierranativa.aplicacion.tierra.nativa.repository.UserRepository;
+import com.tierranativa.aplicacion.tierra.nativa.repository.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import com.tierranativa.aplicacion.tierra.nativa.entity.RoleLogin;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Component
@@ -21,22 +20,45 @@ public class DataInitializer implements CommandLineRunner {
     private final CharacteristicRepository characteristicRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ReviewRepository reviewRepository;
+    private final BookingRepository bookingRepository;
 
-    public DataInitializer(PackageTravelRepository packageTravelRepository, CategoryRepository categoryRepository, CharacteristicRepository characteristicRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public DataInitializer(PackageTravelRepository packageTravelRepository, CategoryRepository categoryRepository, CharacteristicRepository characteristicRepository, UserRepository userRepository, PasswordEncoder passwordEncoder, ReviewRepository reviewRepository, BookingRepository bookingRepository) {
         this.packageTravelRepository = packageTravelRepository;
         this.categoryRepository = categoryRepository;
         this.characteristicRepository = characteristicRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.reviewRepository = reviewRepository;
+        this.bookingRepository = bookingRepository;
     }
+
     @Override
     @Transactional
     public void run(String... args) throws Exception {
+        User admin = createInitialUsers();
 
+        if (packageTravelRepository.count() == 0) {
+            System.out.println("Iniciando carga de catálogo de Tierra Nativa...");
+
+            List<PackageTravel> packages = createTravelPackages();
+            packageTravelRepository.saveAll(packages);
+
+            createReviewsAndBookings(packages, admin);
+
+            System.out.println("✅ Datos iniciales cargados. Total de paquetes: " + packageTravelRepository.count());
+        } else {
+            System.out.println("La base de datos ya contiene paquetes. Omitiendo la carga inicial.");
+        }
+    }
+
+    private User createInitialUsers() {
         String adminEmail = "tierranativa.dev@gmail.com";
-        if (userRepository.findByEmail(adminEmail).isEmpty()){
+        User admin = userRepository.findByEmail(adminEmail).orElse(null);
+
+        if (admin == null) {
             System.out.println("Creando cuenta de SuperUsuario...");
-            User admin= User.builder()
+            admin = User.builder()
                     .firstName("Super")
                     .lastName("Usuario")
                     .email(adminEmail)
@@ -47,19 +69,8 @@ public class DataInitializer implements CommandLineRunner {
             userRepository.save(admin);
             System.out.println("✅ Cuenta de SuperUsuario creada con éxito.");
         }
-
-        if (packageTravelRepository.count() == 0) {
-            System.out.println("Cargando datos iniciales de paquetes de viaje...");
-
-            List<PackageTravel> packages = createTravelPackages();
-            packageTravelRepository.saveAll(packages);
-
-            System.out.println("Datos iniciales cargados. Total de paquetes: " + packageTravelRepository.count());
-        } else {
-            System.out.println("La base de datos ya contiene paquetes. Omitiendo la carga inicial.");
-        }
+        return admin;
     }
-
     private List<PackageTravel> createTravelPackages() {
 
         Category geoPaisajes = Category.builder()
@@ -92,7 +103,7 @@ public class DataInitializer implements CommandLineRunner {
                 .imageUrl("https://images.pexels.com/photos/29581846/pexels-photo-29581846.jpeg")
                 .build();
 
-        List<Category> allCategories = Arrays.asList(geoPaisajes, litoral, aventura, ecoturismo,relajacion);
+        List<Category> allCategories = Arrays.asList(geoPaisajes, litoral, aventura, ecoturismo, relajacion);
         categoryRepository.saveAll(allCategories);
 
         PackageCharacteristics wifi = PackageCharacteristics.builder().title("Wi-Fi").icon("wifi").build();
@@ -136,6 +147,7 @@ public class DataInitializer implements CommandLineRunner {
         paquete1.setBasePrice(690000.00);
         paquete1.setDestination("El Calafate");
         paquete1.setCategories(Set.of(geoPaisajes));
+        paquete1.setAverageRating(4.8);
         paquete1.setCharacteristics(new HashSet<>(Arrays.asList(food, accommodation, transport, guides, snacks, entryFees, medical, photography)));
         paquete1.addImage(PackageImage.builder().url("https://images.pexels.com/photos/17217435/pexels-photo-17217435.jpeg").principal(true).build());
         paquete1.addImage(PackageImage.builder().url("https://images.pexels.com/photos/27180675/pexels-photo-27180675.jpeg").principal(false).build());
@@ -218,7 +230,7 @@ public class DataInitializer implements CommandLineRunner {
         paquete4.setBasePrice(450000.00);
         paquete4.setDestination("Corrientes");
         paquete4.setCategories(Set.of(ecoturismo));
-        paquete4.setCharacteristics(new HashSet<>(Arrays.asList(snacks, wifi, food, guides, photography, transport, localFlights,accommodation)));
+        paquete4.setCharacteristics(new HashSet<>(Arrays.asList(snacks, wifi, food, guides, photography, transport, localFlights, accommodation)));
         paquete4.addImage(PackageImage.builder().url("https://services.meteored.com/img/article/esteros-del-ibera-destino-ideal-para-conectar-con-la-naturaleza-turismo-1734120526464_1280.jpg").principal(true).build());
         paquete4.addImage(PackageImage.builder().url("https://billiken.lat/wp-content/uploads/2022/01/esteros1.jpeg").principal(false).build());
         paquete4.addImage(PackageImage.builder().url("https://images.pexels.com/photos/28939015/pexels-photo-28939015.jpeg").principal(false).build());
@@ -386,7 +398,7 @@ public class DataInitializer implements CommandLineRunner {
         paquete10.setBasePrice(420000.00);
         paquete10.setDestination("Jujuy / Salta");
         paquete10.setCategories(Set.of(geoPaisajes));
-        paquete10.setCharacteristics(new HashSet<>(Arrays.asList(snacks, food, guides, photography, transport,localFlights, accommodation)));
+        paquete10.setCharacteristics(new HashSet<>(Arrays.asList(snacks, food, guides, photography, transport, localFlights, accommodation)));
         paquete10.addImage(PackageImage.builder().url("https://images.pexels.com/photos/33625906/pexels-photo-33625906.jpeg").principal(true).build());
         paquete10.addImage(PackageImage.builder().url("https://images.pexels.com/photos/13555662/pexels-photo-13555662.jpeg").principal(false).build());
         paquete10.addImage(PackageImage.builder().url("https://images.pexels.com/photos/12802851/pexels-photo-12802851.jpeg").principal(false).build());
@@ -399,5 +411,36 @@ public class DataInitializer implements CommandLineRunner {
                 paquete1, paquete2, paquete3, paquete4, paquete5,
                 paquete6, paquete7, paquete8, paquete9, paquete10
         );
+    }
+
+    private void createReviewsAndBookings(List<PackageTravel> packages, User user) {
+        for (PackageTravel pkg : packages) {
+            Review review = Review.builder()
+                    .score(5)
+                    .comment("Excelente servicio y paisajes soñados. La organización fue impecable.")
+                    .createdAt(LocalDateTime.now())
+                    .user(user)
+                    .packageTravel(pkg)
+                    .build();
+            reviewRepository.save(review);
+
+            Booking confirmed = Booking.builder()
+                    .startDate(LocalDate.now().plusDays(10))
+                    .endDate(LocalDate.now().plusDays(15))
+                    .status("CONFIRMED")
+                    .packageTravel(pkg)
+                    .user(user)
+                    .build();
+            bookingRepository.save(confirmed);
+
+            Booking finished = Booking.builder()
+                    .startDate(LocalDate.now().minusDays(30))
+                    .endDate(LocalDate.now().minusDays(25))
+                    .status("FINISHED")
+                    .packageTravel(pkg)
+                    .user(user)
+                    .build();
+            bookingRepository.save(finished);
+        }
     }
 }

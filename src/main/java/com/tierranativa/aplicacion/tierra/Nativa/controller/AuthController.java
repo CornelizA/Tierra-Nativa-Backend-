@@ -21,48 +21,24 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(@Valid @RequestBody UserRegistrationRequestDTO request) {
-        AuthenticationResponse response = authenticationService.register(request);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+        return new ResponseEntity<>(authenticationService.register(request), HttpStatus.CREATED);
     }
-
 
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> login(@Valid @RequestBody AuthenticationRequest request) {
-        AuthenticationResponse response = authenticationService.login(request);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(authenticationService.login(request));
     }
 
     @PostMapping("/resend-email")
     public ResponseEntity<Map<String, String>> resendEmail(@RequestBody Map<String, String> request) {
-        String email = request.get("email");
-        if (email == null || email.trim().isEmpty()) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", "El correo electrónico es obligatorio."));
-        }
-        try {
-            authenticationService.resendWelcomeEmail(email);
-            return ResponseEntity.ok(Map.of("message", "Correo de confirmación reenviado exitosamente."));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "No se pudo procesar el reenvío: " + e.getMessage()));
-        }
+        authenticationService.resendWelcomeEmail(request.get("email"));
+        return ResponseEntity.ok(Map.of("message", "Correo de confirmación reenviado exitosamente."));
     }
 
     @GetMapping("/verify-email")
-    public ResponseEntity<Map<String, String>> verifyEmail(@RequestParam(name = "token") String token) {
-        if (token == null || token.isBlank()) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Token es obligatorio."));
-        }
-        try {
-            authenticationService.activateAccount(token);
-            return ResponseEntity.ok(Map.of("message", "¡Cuenta activada! Ya podés iniciar sesión."));
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.GONE)
-                    .body(Map.of("error", e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Ocurrió un error inesperado."));
-        }
+    public ResponseEntity<Map<String, String>> verifyEmail(@RequestParam String token) {
+        authenticationService.activateAccount(token);
+        return ResponseEntity.ok(Map.of("message", "¡Cuenta activada! Ya podés iniciar sesión."));
     }
 
     @GetMapping("/admin/test")
