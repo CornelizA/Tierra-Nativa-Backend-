@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tierra Nativa - Confirmación</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #ffff; font-family:'Inter', Helvetica, Arial, sans-serif;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ffff; padding: 20px 0;">
+    <tr>
+        <td align="center">
+            <table border="0" cellpadding="0" cellspacing="0" width="600"
+                   style="background-color:#FAF8F0; border-radius: 8px; overflow: hidden; border: 1px solid #e0d9c5;">
+                <tr>
+                    <td align="center" style="padding: 20px 0; background-color: #1A531A;">
+                        <img src="cid:logoTierra"
+                             alt="Tierra Nativa"
+                             width="100"
+                             style="display: block; width: 100px; height: auto; border: 0;">
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="padding: 40px 30px; color: #333; line-height: 1.6;">
+                        <h1 style="color: #1A531A; font-size: 30px; margin-top: 0; text-align: center;">¡Bienvenido a
+                            Tierra Nativa!</h1>
+
+                        <p style="font-size: 18px;">Hola, <strong th:text="${nombre}">Usuario</strong></p>
+                        <p style="font-size: 18px;">Tu cuenta ha sido creada exitosamente. Por favor, confirma que tus datos de acceso sean
+                            correctos.</p>
+
+                        <div class="card">
+                            <p style="font-size: 18px;"><strong>Nombre de Usuario:</strong> <span th:text="${nombre + ' ' + apellido}"></span>
+                            </p>
+                            <p style="font-size: 18px;"><strong>Correo Electrónico:</strong> <span th:text="${email}"></span></p>
+                        </div>
+
+                        <div style="text-align: center; margin: 35px 0;">
+                            <p style="font-size: 18px;">Si la información es correcta, puedes acceder a tu cuenta desde aquí:</p>
+                            <a th:href="${verifyUrl}" class="button" style=
+                        "background-color: #1A531A;color:#ffff; margin-top: 35px;
+                        margin-bottom: 20px;
+                        font-size: 18px;
+                        padding: 8px 14px;
+                        border: none;
+                        border-radius: 4px;
+                        cursor: pointer;
+                        font-weight: 500;
+                        transition: background-color 0.2s, opacity 0.2s;"
+                            >Confirmar mi Correo</a>
+                        </div>
+                        <p style="margin-top: 30px; font-size: 15px; margin-bottom: 0; color: #333;">
+                            ¿No eres tú? Si no solicitaste esta cuenta, ignora este mensaje o contáctanos.
+                        </p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="padding: 30px; background-color: #FAF8F0; color: #1A531A; font-size: 15px; text-align: center; border-top: 1px solid #eeeeee;">
+                        <p style="margin: 0 0 10px 0;">Tierra Nativa &copy; 2026 | Todos los derechos reservados</p>
+                        <p style="margin: 0;">Este correo fue enviado automáticamente. Por favor no respondas a este
+                            mensaje.</p>
+                    </td>
+                </tr>
+
+            </table>
+        </td>
+    </tr>
+</table>
+</body>
+</html>
