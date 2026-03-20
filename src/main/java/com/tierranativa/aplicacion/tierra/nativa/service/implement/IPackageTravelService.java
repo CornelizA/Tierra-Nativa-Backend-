@@ -55,6 +55,7 @@ public class IPackageTravelService implements PackageTravelService {
         newPackage.setBasePrice(requestDto.getBasePrice());
         newPackage.setShortDescription(requestDto.getShortDescription());
         newPackage.setDestination(requestDto.getDestination());
+        newPackage.setWhatsappContact(requestDto.getWhatsappContact());
 
         Set<Category> categories = requestDto.getCategoryId().stream()
                 .map(id -> categoryRepository.findById(id)
@@ -114,7 +115,6 @@ public class IPackageTravelService implements PackageTravelService {
                     .collect(Collectors.toList());
             bookingRepository.saveAll(blocks);
         }
-
         return savedPackage;
     }
 
@@ -132,6 +132,7 @@ public class IPackageTravelService implements PackageTravelService {
         if (updateDto.getBasePrice() != null) existingPackage.setBasePrice(updateDto.getBasePrice());
         if (updateDto.getShortDescription() != null) existingPackage.setShortDescription(updateDto.getShortDescription());
         if (updateDto.getDestination() != null) existingPackage.setDestination(updateDto.getDestination());
+        if (updateDto.getWhatsappContact() != null) existingPackage.setWhatsappContact(updateDto.getWhatsappContact());
 
         if (updateDto.getCategoryId() != null) {
             Set<Category> categories = updateDto.getCategoryId().stream()

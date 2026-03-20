@@ -5,6 +5,7 @@ import com.tierranativa.aplicacion.tierra.nativa.entity.Characteristics;
 import com.tierranativa.aplicacion.tierra.nativa.entity.PackageTravel;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -67,6 +68,14 @@ public class PackageTravelRequestDTO {
 
     private List<AvailabilityBlockDTO> availabilityBlocks;
 
+    private String whatsappContact;
+
+    private Integer numberOfDays;
+
+    @NotNull(message = "La capacidad del paquete es obligatoria.")
+    @Min(value = 1, message = "La capacidad debe ser al menos 1 persona.")
+    private Integer capacity;
+
     public static PackageTravelRequestDTO fromEntity(PackageTravel packageTravel, Long excludeCategoryId, Boolean isFavoriteStatus) {
         if (packageTravel == null) return null;
 
@@ -116,6 +125,9 @@ public class PackageTravelRequestDTO {
                 .reviews(reviewDtos)
                 .isFavorite(isFavoriteStatus != null ? isFavoriteStatus : false)
                 .availabilityBlocks(blocks)
+                .whatsappContact(packageTravel.getWhatsappContact())
+                .numberOfDays(packageTravel.getNumberOfDays())
+                .capacity(packageTravel.getCapacity())
                 .build();
     }
 

@@ -47,6 +47,9 @@ public class User implements UserDetails {
     @Column(name = "activation_token")
     private String activationToken;
 
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
     @Enumerated(EnumType.STRING)
     private RoleLogin role;
 

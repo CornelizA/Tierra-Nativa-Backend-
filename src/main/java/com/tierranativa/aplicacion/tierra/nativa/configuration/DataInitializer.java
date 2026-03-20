@@ -151,6 +151,8 @@ public class DataInitializer implements CommandLineRunner {
         paquete1.setItineraryDetail(detail1);
         paquete1.setBasePrice(690000.00);
         paquete1.setDestination("El Calafate");
+        paquete1.setNumberOfDays(4);
+        paquete1.setCapacity(20);
         paquete1.setCategories(new HashSet<>(Collections.singletonList(cats.get("GEOPAISAJES"))));
         paquete1.setAverageRating(4.8);
         paquete1.setCharacteristics(new HashSet<>(Arrays.asList(chars.get("Comida incluida"), chars.get("Alojamiento Incluido"), chars.get("Traslados"), chars.get("Snacks e Hidratación"), chars.get("Guías"), chars.get("Emergencias"), chars.get("Fotos"), chars.get("Entradas Incluidas"))));
@@ -180,6 +182,8 @@ public class DataInitializer implements CommandLineRunner {
         paquete2.setItineraryDetail(detail2);
         paquete2.setBasePrice(890000.00);
         paquete2.setDestination("Corrientes");
+        paquete2.setNumberOfDays(7);
+        paquete2.setCapacity(20);
         paquete2.setCategories(new HashSet<>(Collections.singletonList(cats.get("AVENTURA"))));
         paquete2.setCharacteristics(new HashSet<>(Arrays.asList(
                 chars.get("Snacks e Hidratación"), chars.get("Comida incluida"), chars.get("Guías"),
@@ -211,6 +215,8 @@ public class DataInitializer implements CommandLineRunner {
         paquete3.setItineraryDetail(detail3);
         paquete3.setBasePrice(480000.00);
         paquete3.setDestination("Misiones");
+        paquete3.setNumberOfDays(4);
+        paquete3.setCapacity(20);
         paquete3.setCategories(new HashSet<>(Collections.singletonList(cats.get("LITORAL"))));
         paquete3.setCharacteristics(new HashSet<>(Arrays.asList(
                 chars.get("Snacks e Hidratación"), chars.get("Wi-Fi"), chars.get("Comida incluida"),
@@ -242,6 +248,8 @@ public class DataInitializer implements CommandLineRunner {
         paquete4.setItineraryDetail(detail4);
         paquete4.setBasePrice(450000.00);
         paquete4.setDestination("Corrientes");
+        paquete4.setNumberOfDays(4);
+        paquete4.setCapacity(20);
         paquete4.setCategories(new HashSet<>(Collections.singletonList(cats.get("ECOTURISMO"))));
         paquete4.setCharacteristics(new HashSet<>(Arrays.asList(
                 chars.get("Snacks e Hidratación"), chars.get("Wi-Fi"), chars.get("Comida incluida"),
@@ -274,6 +282,8 @@ public class DataInitializer implements CommandLineRunner {
         paquete5.setItineraryDetail(detail5);
         paquete5.setBasePrice(550000.00);
         paquete5.setDestination("Chubut");
+        paquete5.setNumberOfDays(4);
+        paquete5.setCapacity(20);
         paquete5.setCategories(new HashSet<>(Collections.singletonList(cats.get("ECOTURISMO"))));
         paquete5.setCharacteristics(new HashSet<>(Arrays.asList(
                 chars.get("Snacks e Hidratación"), chars.get("Comida incluida"), chars.get("Guías"),
@@ -305,6 +315,8 @@ public class DataInitializer implements CommandLineRunner {
         paquete6.setItineraryDetail(detail6);
         paquete6.setBasePrice(1900000.00);
         paquete6.setDestination("Isla malvinas");
+        paquete6.setNumberOfDays(7);
+        paquete6.setCapacity(20);
         paquete6.setCategories(new HashSet<>(Collections.singletonList(cats.get("ECOTURISMO"))));
         paquete6.setCharacteristics(new HashSet<>(Arrays.asList(
                 chars.get("Snacks e Hidratación"), chars.get("Comida incluida"), chars.get("Guías"),
@@ -337,6 +349,8 @@ public class DataInitializer implements CommandLineRunner {
         paquete7.setItineraryDetail(detail7);
         paquete7.setBasePrice(350000.00);
         paquete7.setDestination("Chubut");
+        paquete7.setNumberOfDays(3);
+        paquete7.setCapacity(20);
         paquete7.setCategories(new HashSet<>(Collections.singletonList(cats.get("GEOPAISAJES"))));
         paquete7.setCharacteristics(new HashSet<>(Arrays.asList(
                 chars.get("Snacks e Hidratación"), chars.get("Wi-Fi"), chars.get("Comida incluida"),
@@ -367,6 +381,8 @@ public class DataInitializer implements CommandLineRunner {
         paquete8.setItineraryDetail(detail8);
         paquete8.setBasePrice(620000.00);
         paquete8.setDestination("Rio Negro");
+        paquete8.setNumberOfDays(5);
+        paquete8.setCapacity(12);
         paquete8.setCategories(new HashSet<>(Collections.singletonList(cats.get("AVENTURA"))));
         paquete8.setCharacteristics(new HashSet<>(Arrays.asList(
                 chars.get("Snacks e Hidratación"), chars.get("Comida incluida"), chars.get("Guías"),
@@ -398,6 +414,8 @@ public class DataInitializer implements CommandLineRunner {
         paquete9.setItineraryDetail(detail9);
         paquete9.setBasePrice(750000.00);
         paquete9.setDestination("Tierra del Fuego");
+        paquete9.setNumberOfDays(4);
+        paquete9.setCapacity(20);
         paquete9.setCategories(new HashSet<>(Collections.singletonList(cats.get("RELAJACION"))));
         paquete9.setCharacteristics(new HashSet<>(Arrays.asList(
                 chars.get("Snacks e Hidratación"), chars.get("Comida incluida"), chars.get("Guías"),
@@ -432,6 +450,8 @@ public class DataInitializer implements CommandLineRunner {
         paquete10.setItineraryDetail(detail10);
         paquete10.setBasePrice(420000.00);
         paquete10.setDestination("Jujuy / Salta");
+        paquete10.setNumberOfDays(4);
+        paquete10.setCapacity(20);
         paquete10.setCategories(new HashSet<>(Collections.singletonList(cats.get("GEOPAISAJES"))));
         paquete10.setCharacteristics(new HashSet<>(Arrays.asList(
                 chars.get("Snacks e Hidratación"), chars.get("Comida incluida"), chars.get("Guías"),
@@ -478,16 +498,23 @@ public class DataInitializer implements CommandLineRunner {
                 LocalDate start = LocalDate.now().plusDays(dayOffset);
                 LocalDate end = start.plusDays(duration);
 
+                int travelers = 1 + random.nextInt(3);
                 bookingRepository.save(Booking.builder()
                         .startDate(start).endDate(end).status("CONFIRMED")
+                        .creationDate(LocalDateTime.now())
+                        .travelerCount(travelers)
+                        .totalPrice(pkg.getBasePrice() * travelers)
                         .packageTravel(pkg).user(admin).build());
                 dayOffset += duration;
             }
 
             Booking finished = Booking.builder()
                     .startDate(LocalDate.now().minusMonths(2))
-                    .endDate(LocalDate.now().minusMonths(2).plusDays(5))
+                    .endDate(LocalDate.now().minusMonths(2).plusDays(pkg.getNumberOfDays() - 1))
                     .status("FINISHED")
+                    .creationDate(LocalDateTime.now().minusMonths(2))
+                    .travelerCount(2)
+                    .totalPrice(pkg.getBasePrice() * 2)
                     .packageTravel(pkg)
                     .user(admin)
                     .build();

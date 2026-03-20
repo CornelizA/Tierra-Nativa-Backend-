@@ -62,6 +62,15 @@ public class PackageTravel {
 
     private String imageUrl;
 
+    @Column(name = "whatsapp_contact")
+    private String whatsappContact;
+
+    @Column(name = "number_of_days", nullable = false)
+    private Integer numberOfDays;
+
+    @Column(name = "capacity", nullable = false)
+    private Integer capacity;
+
     @JsonManagedReference
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

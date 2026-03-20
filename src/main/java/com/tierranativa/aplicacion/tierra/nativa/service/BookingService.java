@@ -11,4 +11,8 @@ public interface BookingService {
     BookingResponseDTO createBooking(BookingRequestDTO request, User user);
 
     List<BookingResponseDTO> getBookingsByUserId(Long userId);
+
+    BookingResponseDTO getBookingById(Long bookingId, User user);
+
+    BookingResponseDTO cancelBooking(Long bookingId, User user);
 }

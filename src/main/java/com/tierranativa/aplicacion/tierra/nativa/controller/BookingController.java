@@ -31,4 +31,16 @@ public class BookingController {
         List<BookingResponseDTO> bookings = bookingService.getBookingsByUserId(user.getId());
         return ResponseEntity.ok(bookings);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<BookingResponseDTO> getBookingById(@PathVariable Long id, @AuthenticationPrincipal User user) {
+        BookingResponseDTO booking = bookingService.getBookingById(id, user);
+        return ResponseEntity.ok(booking);
+    }
+
+    @PatchMapping("/{id}/cancel")
+    public ResponseEntity<BookingResponseDTO> cancelBooking(@PathVariable Long id, @AuthenticationPrincipal User user) {
+        BookingResponseDTO booking = bookingService.cancelBooking(id, user);
+        return ResponseEntity.ok(booking);
+    }
 }
