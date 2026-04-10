@@ -64,6 +64,8 @@ class PackageTravelRepositoryTest {
         packageTravel1.setBasePrice(1500.00);
         packageTravel1.setDestination("Patagonia Argentina");
         packageTravel1.setShortDescription("Una breve descripción de la aventura.");
+        packageTravel1.setCapacity(10);
+        packageTravel1.setNumberOfDays(7);
         packageTravel1.setCategories(Set.of(geoPaisajes));
         packageTravel1.setCharacteristics(Set.of(wifi));
         packageTravel1.setItineraryDetail(detail1);
@@ -85,6 +87,8 @@ class PackageTravelRepositoryTest {
         packageTravel2.setBasePrice(800.50);
         packageTravel2.setDestination("Sierras de Córdoba");
         packageTravel2.setShortDescription("Una breve descripción de la relajación.");
+        packageTravel2.setCapacity(8);
+        packageTravel2.setNumberOfDays(3);
         packageTravel2.setCategories(Set.of(relajacion));
         packageTravel2.setCharacteristics(Set.of(wifi));
         packageTravel2.setItineraryDetail(detail2);

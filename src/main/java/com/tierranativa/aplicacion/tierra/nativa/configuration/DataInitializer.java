@@ -2,6 +2,7 @@ package com.tierranativa.aplicacion.tierra.nativa.configuration;
 
 import com.tierranativa.aplicacion.tierra.nativa.entity.*;
 import com.tierranativa.aplicacion.tierra.nativa.repository.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Component
 public class DataInitializer implements CommandLineRunner {
 
@@ -41,7 +43,7 @@ public class DataInitializer implements CommandLineRunner {
         User dummyUser = createDummyReviewer();
 
         if (packageTravelRepository.count() == 0) {
-            System.out.println("🌱 Iniciando carga de catálogo de Tierra Nativa...");
+            log.info("Iniciando carga de catálogo de Tierra Nativa...");
 
             Map<String, Category> categories = seedCategories();
             Map<String, Characteristics> chars = seedCharacteristics();
@@ -53,10 +55,9 @@ public class DataInitializer implements CommandLineRunner {
 
             processInteractionsAndScores(packages, admin, dummyUser);
 
-            System.out.println("✅ Datos iniciales cargados. Total de paquetes: " + packageTravelRepository.count());
-            System.out.println("💡 El usuario '" + admin.getEmail() + "' ya tiene reservas 'FINISHED' en todos los paquetes.");
+            log.info("Datos iniciales cargados. Total de paquetes: {}", packageTravelRepository.count());
         } else {
-            System.out.println("ℹ️ La base de datos ya contiene paquetes. Omitiendo la carga inicial.");
+            log.info("La base de datos ya contiene paquetes. Omitiendo la carga inicial.");
         }
     }
 
@@ -65,7 +66,7 @@ public class DataInitializer implements CommandLineRunner {
         User admin = userRepository.findByEmail(adminEmail).orElse(null);
 
         if (admin == null) {
-            System.out.println("👤 Creando cuenta de SuperUsuario...");
+            log.info("Creando cuenta de SuperUsuario...");
             admin = User.builder()
                     .firstName("Super")
                     .lastName("Usuario")
@@ -73,9 +74,10 @@ public class DataInitializer implements CommandLineRunner {
                     .password(passwordEncoder.encode("Tierranativa24$"))
                     .role(RoleLogin.ADMIN)
                     .enabled(true)
+                    .phoneNumber("+54 9 11 4523-7890")
                     .build();
             userRepository.save(admin);
-            System.out.println("✅ Cuenta de SuperUsuario creada con éxito.");
+            log.info("Cuenta de SuperUsuario creada con éxito.");
         }
         return admin;
     }
@@ -90,6 +92,7 @@ public class DataInitializer implements CommandLineRunner {
                     .password(passwordEncoder.encode("Dummy123$"))
                     .role(RoleLogin.USER)
                     .enabled(true)
+                    .phoneNumber("+54 9 351 688-4231")
                     .build();
             return userRepository.save(user);
         });
@@ -477,6 +480,19 @@ public class DataInitializer implements CommandLineRunner {
         String[] comments = {"Excelente servicio.", "Paisajes soñados.", "Muy buena atención.", "Guía excepcional.",
                 "El guía fue increíble, muy conocedor y apasionado. Una experiencia inolvidable, 100% recomendable.", "Organización perfecta. Todo salió tal como se planeó, sin imprevistos. Muy profesionales."};
 
+        String[] specialRequestsList = {
+                "Por favor, confirmar llegada con 24 horas de anticipación.",
+                "Somos vegetarianos, solicitamos menú especial para todo el grupo.",
+                "Viajamos en aniversario, ¿es posible algún detalle de bienvenida?",
+                "Tengo alergia al gluten, necesito menú sin TACC.",
+                "Preferimos habitación con vista al paisaje principal.",
+                "Somos un grupo familiar con niños de 8 y 12 años.",
+                "Solicito información sobre accesibilidad para movilidad reducida.",
+                "¿Es posible adelantar el horario de check-in? Llegamos temprano.",
+                "Necesitamos traslado desde el aeropuerto incluido en el paquete.",
+                "Somos un grupo de 4 personas, preferimos habitaciones contiguas."
+        };
+
         for (PackageTravel pkg : packages) {
             int numReviews = 3 + random.nextInt(5);
             for (int i = 0; i < numReviews; i++) {
@@ -504,6 +520,7 @@ public class DataInitializer implements CommandLineRunner {
                         .creationDate(LocalDateTime.now())
                         .travelerCount(travelers)
                         .totalPrice(pkg.getBasePrice() * travelers)
+                        .specialRequests(specialRequestsList[random.nextInt(specialRequestsList.length)])
                         .packageTravel(pkg).user(admin).build());
                 dayOffset += duration;
             }
@@ -515,6 +532,7 @@ public class DataInitializer implements CommandLineRunner {
                     .creationDate(LocalDateTime.now().minusMonths(2))
                     .travelerCount(2)
                     .totalPrice(pkg.getBasePrice() * 2)
+                    .specialRequests(specialRequestsList[random.nextInt(specialRequestsList.length)])
                     .packageTravel(pkg)
                     .user(admin)
                     .build();

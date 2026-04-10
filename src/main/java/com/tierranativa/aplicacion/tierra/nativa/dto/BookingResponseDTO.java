@@ -35,6 +35,8 @@ public class BookingResponseDTO {
     private Integer travelerCount;
     private Double totalPrice;
     private boolean reviewed;
+    private String userPhone;
+    private boolean isContacted;
 
 
     public static BookingResponseDTO fromEntity(Booking booking) {
@@ -66,7 +68,9 @@ public class BookingResponseDTO {
                 .userEmail(booking.getUser().getEmail())
                 .userFirstName(booking.getUser().getFirstName())
                 .userLastName(booking.getUser().getLastName())
+                .userPhone(booking.getUser().getPhoneNumber())
                 .reviewed(reviewed)
+                .isContacted(booking.isContacted())
                 .build();
     }
 }

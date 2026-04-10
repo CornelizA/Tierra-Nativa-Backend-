@@ -83,6 +83,17 @@ Gestión del catálogo principal de experiencias turísticas.
 | PUT    | `/paquetes/{id}` | Editar paquetes de viaje.                 | Admin   |
 | DELETE | `/paquetes/{id}` | Elimina un paquete de viaje.              | Admin   |
 
+### 🛡️ Administración (Usuarios y Gestión Global)
+
+Control de permisos y supervisión de operaciones comerciales.
+
+| Método | Endpoint                         | Descripción                                  | Acceso |
+|:-------|:---------------------------------|:---------------------------------------------|:-------|
+| GET    | `/admin`                         | Lista todos los usuarios registrados.        | Admin  |
+| PUT    | `/admin/role`                    | Actualiza el rol de un usuario (USER/ADMIN). | Admin  |
+| GET    | `/admin/bookings`                | Listado global de reservas para gestión.     | Admin  |
+| PATCH  | `/admin/bookings/{id}/contacted` | Marca reserva como coordinada/contactada.    | Admin  |
+
 ### 🏷️ Categorías
 
 Organización de los paquetes por tipo de experiencia.
@@ -142,18 +153,22 @@ Validación social y feedback de experiencias finalizadas.
 
 Gestión de transacciones y cronograma de viajes.
 
-| Método | Endpoint                | Descripción                                 | Acceso  |
-|:-------|:------------------------|:--------------------------------------------|:--------|
-| POST   | `/bookings`             | Registra una nueva reserva de viaje.        | Usuario |
-| GET    | `/bookings/my-bookings` | Obtiene el historial de viajes del usuario. | Usuario |
+| Método | Endpoint                            | Descripción                                   | Acceso  |
+|:-------|:------------------------------------|:----------------------------------------------|:--------|
+| POST   | `/bookings`                         | Registra una nueva reserva de viaje.          | Usuario |
+| GET    | `/bookings/my-bookings`             | Obtiene el historial de viajes del usuario.   | Usuario |
+| GET    | `/bookings/{id}`                    | Obtiene el detalle de una reserva específica. | Usuario |
+| PATCH  | `/bookings/{id}/cancel`             | Cancela una reserva (Política de 15 días).    | Usuario |
+| GET    | `/bookings/{id}/available-capacity` | Consulta cupos libres para fechas dadas.      | Público |
 
-### 🔍 Búsqueda y Disponibilidad
+### 🛠️ Configuración y Búsqueda
 
 Motor de consulta dinámica.
 
-| Método | Endpoint  | Descripción                                                     | Acceso  |
-|:-------|:----------|:----------------------------------------------------------------|:--------|
-| GET    | `/search` | Filtra por palabra clave y disponibilidad de fechas (Check-in). | Público |
+| Método | Endpoint           | Descripción                                                     | Acceso  |
+|:-------|:-------------------|:----------------------------------------------------------------|:--------|
+| GET    | `/search`          | Filtra por palabra clave y disponibilidad de fechas (Check-in). | Público |
+| GET    | `/configs/contact` | Datos de WhatsApp y mensaje dinámico.                           | Público |
 
 ---
 

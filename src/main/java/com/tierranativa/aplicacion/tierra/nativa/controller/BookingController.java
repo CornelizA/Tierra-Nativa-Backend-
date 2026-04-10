@@ -11,7 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/bookings")
@@ -42,5 +44,11 @@ public class BookingController {
     public ResponseEntity<BookingResponseDTO> cancelBooking(@PathVariable Long id, @AuthenticationPrincipal User user) {
         BookingResponseDTO booking = bookingService.cancelBooking(id, user);
         return ResponseEntity.ok(booking);
+    }
+
+    @GetMapping("/{id}/available-capacity")
+    public ResponseEntity<Map<String, Integer>> getAvailableCapacity(@PathVariable Long id, @RequestParam String startDate, @RequestParam String endDate) {
+        int available = bookingService.getAvailableSpots(id, LocalDate.parse(startDate), LocalDate.parse(endDate));
+        return ResponseEntity.ok(Map.of("availableSpots", available));
     }
 }

@@ -47,4 +47,7 @@ public class Booking {
     private User user;
 
     private String status;
+
+    @Column(nullable = false)
+    private boolean isContacted = false;
 }

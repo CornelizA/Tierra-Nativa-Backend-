@@ -138,6 +138,34 @@ public class IBookingService implements BookingService {
 
         booking.setStatus("CANCELLED");
         Booking saved = bookingRepository.save(booking);
-        return BookingResponseDTO.fromEntity(saved);
+        BookingResponseDTO response = BookingResponseDTO.fromEntity(saved);
+        emailService.sendCancellationEmail(response);
+        return response;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BookingResponseDTO> getAllBookingsForAdmin() {
+        return bookingRepository.findAllByOrderByStartDateDesc().stream()
+                .map(BookingResponseDTO::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public BookingResponseDTO updateContactedStatus(Long bookingId, boolean contacted) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new ResourceNotFoundException("La reserva con ID " + bookingId + " no existe."));
+        booking.setContacted(contacted);
+        return BookingResponseDTO.fromEntity(bookingRepository.save(booking));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public int getAvailableSpots(Long packageId, LocalDate startDate, LocalDate endDate) {
+        PackageTravel pkg = packageRepository.findById(packageId)
+                .orElseThrow(() -> new ResourceNotFoundException("El paquete con ID " + packageId + " no existe."));
+        int booked = bookingRepository.sumTravelersInOverlap(packageId, startDate, endDate);
+        return Math.max(0, pkg.getCapacity() - booked);
     }
 }

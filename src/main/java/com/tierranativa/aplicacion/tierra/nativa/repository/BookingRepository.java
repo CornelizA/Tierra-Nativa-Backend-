@@ -46,4 +46,6 @@ public interface BookingRepository extends JpaRepository<Booking , Long> {
     List<Booking> findByUserIdOrderByCreationDateDesc(Long userId);
 
     List<Booking> findByPackageTravelIdAndStatus(Long packageId, String status);
+
+    List<Booking> findAllByOrderByStartDateDesc();
 }

@@ -67,14 +67,31 @@ class PackageTravelControllerTest {
         mockPackage.setReviews(new ArrayList<>());
         mockPackage.setItineraryDetail(detail);
 
+        ItineraryDetailDTO itinerary = ItineraryDetailDTO.builder()
+                .duration("4 Días y 3 Noches")
+                .lodgingType("Hotel 4 estrellas en El Calafate")
+                .transferType("Transfer privado aeropuerto-hotel")
+                .dailyActivitiesDescription("Día 1: Llegada. Día 2: Glaciar Perito Moreno. Día 3: Navegación por el lago.")
+                .foodAndHydrationNotes("Desayuno buffet incluido todos los días en el hotel.")
+                .generalRecommendations("Llevar ropa abrigada y calzado impermeable para el glaciar.")
+                .build();
+
+        ImageDTO image = ImageDTO.builder()
+                .url("https://example.com/glaciar.jpg")
+                .principal(true)
+                .build();
+
         PackageTravelRequestDTO validDto = PackageTravelRequestDTO.builder()
                 .name("Glaciar Perito Moreno: Hielo Milenario")
                 .basePrice(690000.00)
                 .shortDescription("Descripción válida de más de diez caracteres")
                 .destination("El Calafate")
                 .categoryId(Set.of(1L))
-                .itineraryDetail(new ItineraryDetailDTO())
-                .imageDetails(List.of(new ImageDTO()))
+                .characteristicIds(Set.of(1L))
+                .itineraryDetail(itinerary)
+                .imageDetails(List.of(image))
+                .capacity(15)
+                .numberOfDays(4)
                 .build();
 
         try {

@@ -81,7 +81,7 @@
 
                             <tr>
                                 <td style="padding: 14px 20px; border-bottom: 1px solid #ece8db; color: #777; font-size: 14px; font-weight: 600;">
-                                    Cantidad de personas
+                                    Viajeros
                                 </td>
                                 <td style="padding: 14px 20px; border-bottom: 1px solid #ece8db; color: #333; font-size: 14px;"
                                     th:text="${cantidadPersonas} + ' persona(s)'"> 1 persona(s)
@@ -90,7 +90,7 @@
 
                             <tr>
                                 <td style="padding: 14px 20px; border-bottom: 1px solid #ece8db; color: #777; font-size: 14px; font-weight: 600;">
-                                    Precio por persona
+                                    Precio base
                                 </td>
                                 <td style="padding: 14px 20px; border-bottom: 1px solid #ece8db; color: #333; font-size: 14px;"
                                     th:text="'$ ' + ${#numbers.formatDecimal(precioPorPersona, 1, 'POINT', 2, 'COMMA')}">$ 0,00

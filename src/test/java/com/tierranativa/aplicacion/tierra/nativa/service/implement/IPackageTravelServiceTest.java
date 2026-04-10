@@ -64,6 +64,8 @@ class IPackageTravelServiceTest {
         mockPackage = new PackageTravel();
         mockPackage.setId(1L);
         mockPackage.setName("Paquete Test");
+        mockPackage.setCapacity(15);
+        mockPackage.setNumberOfDays(5);
         mockPackage.setCategories(Set.of(geoPaisajes));
 
         wifiEntity = Characteristics.builder()
@@ -80,6 +82,7 @@ class IPackageTravelServiceTest {
         detailDto.setFoodAndHydrationNotes("Comida");
         detailDto.setGeneralRecommendations("Tips");
 
+        // Sprint 4: incluye capacity y numberOfDays
         validDto = PackageTravelRequestDTO.builder()
                 .name("Paquete Nuevo")
                 .basePrice(1500.00)
@@ -94,8 +97,14 @@ class IPackageTravelServiceTest {
                                 .principal(true)
                                 .build()
                 ))
+                .capacity(15)
+                .numberOfDays(5)
                 .build();
     }
+
+    // =========================================================
+    // registerNewPackage
+    // =========================================================
 
     @Test
     void registerNewPackage_Success() throws Exception {
@@ -107,9 +116,29 @@ class IPackageTravelServiceTest {
         packageTravelService.registerNewPackage(validDto, adminUser);
 
         verify(packageTravelRepository, times(1)).save(packageTravelCaptor.capture());
-        PackageTravel savedPackage = packageTravelCaptor.getValue();
+        PackageTravel saved = packageTravelCaptor.getValue();
 
-        assertThat(savedPackage.getName()).isEqualTo("Paquete Nuevo");
+        assertThat(saved.getName()).isEqualTo("Paquete Nuevo");
+        assertThat(saved.getBasePrice()).isEqualTo(1500.00);
+        assertThat(saved.getDestination()).isEqualTo("Destino Test");
+
+        // Sprint 4: capacity y numberOfDays deben persistirse
+        assertThat(saved.getCapacity()).isEqualTo(15);
+        assertThat(saved.getNumberOfDays()).isEqualTo(5);
+    }
+
+    @Test
+    void registerNewPackage_SetsImageUrl_FromPrincipalImage() throws Exception {
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(geoPaisajes));
+        when(characteristicRepository.findById(1L)).thenReturn(Optional.of(wifiEntity));
+        when(packageTravelRepository.existsByName(anyString())).thenReturn(false);
+        when(packageTravelRepository.save(any(PackageTravel.class))).thenReturn(mockPackage);
+
+        packageTravelService.registerNewPackage(validDto, adminUser);
+
+        verify(packageTravelRepository).save(packageTravelCaptor.capture());
+        PackageTravel saved = packageTravelCaptor.getValue();
+        assertThat(saved.getImageUrl()).isEqualTo("http://img.url");
     }
 
     @Test
@@ -118,9 +147,12 @@ class IPackageTravelServiceTest {
 
         assertThrows(ResourceAlreadyExistsException.class,
                 () -> packageTravelService.registerNewPackage(validDto, adminUser));
-
         verify(packageTravelRepository, never()).save(any());
     }
+
+    // =========================================================
+    // update
+    // =========================================================
 
     @Test
     void update_Success() throws Exception {
@@ -132,8 +164,25 @@ class IPackageTravelServiceTest {
 
         packageTravelService.update(1L, validDto, adminUser);
 
-        verify(packageTravelRepository).save(any(PackageTravel.class));
+        verify(packageTravelRepository).save(packageTravelCaptor.capture());
+        PackageTravel updated = packageTravelCaptor.getValue();
+
+        // Sprint 4: capacity y numberOfDays también deben actualizarse
+        assertThat(updated.getCapacity()).isEqualTo(15);
+        assertThat(updated.getNumberOfDays()).isEqualTo(5);
     }
+
+    @Test
+    void update_ThrowsNotFound_WhenPackageMissing() {
+        when(packageTravelRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class,
+                () -> packageTravelService.update(99L, validDto, adminUser));
+    }
+
+    // =========================================================
+    // delete
+    // =========================================================
 
     @Test
     void delete_Success() {
@@ -150,6 +199,10 @@ class IPackageTravelServiceTest {
 
         assertThrows(ResourceNotFoundException.class, () -> packageTravelService.delete(99L));
     }
+
+    // =========================================================
+    // findByCategoryTitle / findCategoryByTitle
+    // =========================================================
 
     @Test
     void findByCategoryTitle_Success() {

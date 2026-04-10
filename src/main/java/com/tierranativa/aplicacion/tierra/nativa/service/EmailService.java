@@ -119,4 +119,52 @@ public class EmailService {
             log.error("Error al enviar confirmación de reserva #{} a {}: {}", booking.getId(), to, e.getMessage());
         }
     }
+
+    @Async
+    public void sendCancellationEmail(BookingResponseDTO booking) {
+        String to = booking.getUserEmail();
+        log.info("Enviando notificación de cancelación de reserva #{} a: {}", booking.getId(), to);
+
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+            Context context = new Context();
+            context.setVariable("nombreCliente", booking.getUserFirstName() + " " + booking.getUserLastName());
+            context.setVariable("idReserva", booking.getId());
+            context.setVariable("nombrePaquete", booking.getPackageName());
+            context.setVariable("destino", booking.getPackageDestination());
+            context.setVariable("fechaInicio", booking.getStartDate().format(formatter));
+            context.setVariable("fechaFin", booking.getEndDate().format(formatter));
+            context.setVariable("cantidadPersonas", booking.getTravelerCount());
+            context.setVariable("precioPorPersona", booking.getPackageBasePrice());
+            context.setVariable("precioTotal", booking.getTotalPrice());
+
+            String htmlContent = templateEngine.process("booking-cancellation", context);
+
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(
+                    message,
+                    true,
+                    StandardCharsets.UTF_8.name()
+            );
+
+            helper.setTo(to);
+            helper.setSubject("Cancelación de Reserva #" + booking.getId() + " - Tierra Nativa");
+            helper.setFrom("Tierra Nativa <no-reply@tierranativa.com>");
+            helper.setText(htmlContent, true);
+
+            ClassPathResource logoResource = new ClassPathResource("static/images/logo.png");
+            if (logoResource.exists()) {
+                helper.addInline("logoTierra", logoResource);
+            } else {
+                log.warn("Logo no encontrado en: static/images/logo.png");
+            }
+
+            mailSender.send(message);
+            log.info("Notificación de cancelación de reserva #{} enviada exitosamente a: {}", booking.getId(), to);
+
+        } catch (MessagingException | MailException e) {
+            log.error("Error al enviar notificación de cancelación de reserva #{} a {}: {}", booking.getId(), to, e.getMessage());
+        }
+    }
 }

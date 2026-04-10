@@ -7,7 +7,9 @@ import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication(exclude = {R2dbcAutoConfiguration.class})
 @EnableAsync
-public class aplicaciontierranativa {
+public class
+
+aplicaciontierranativa {
 
     public static void main(String[] args) {
         SpringApplication.run(aplicaciontierranativa.class, args);
