@@ -1,8 +1,8 @@
 package com.tierranativa.aplicacion.tierra.nativa.controller;
 
 import com.tierranativa.aplicacion.tierra.nativa.dto.BookingResponseDTO;
+import com.tierranativa.aplicacion.tierra.nativa.dto.UserResponseDTO;
 import com.tierranativa.aplicacion.tierra.nativa.dto.UserRoleUpdateRequestDTO;
-import com.tierranativa.aplicacion.tierra.nativa.entity.User;
 import com.tierranativa.aplicacion.tierra.nativa.service.BookingService;
 import com.tierranativa.aplicacion.tierra.nativa.service.UserService;
 import jakarta.validation.Valid;
@@ -24,13 +24,13 @@ public class AdminController {
 
     @PutMapping("/role")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<User> updateRole(@Valid @RequestBody UserRoleUpdateRequestDTO request) {
+    public ResponseEntity<UserResponseDTO> updateRole(@Valid @RequestBody UserRoleUpdateRequestDTO request) {
         return ResponseEntity.ok(userService.updateRole(request));
     }
 
     @GetMapping
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<List<User>> getAllUsers() {
+    public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
         return ResponseEntity.ok(userService.findAll());
     }
 

@@ -2,9 +2,9 @@ package com.tierranativa.aplicacion.tierra.nativa.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tierranativa.aplicacion.tierra.nativa.dto.BookingResponseDTO;
+import com.tierranativa.aplicacion.tierra.nativa.dto.UserResponseDTO;
 import com.tierranativa.aplicacion.tierra.nativa.dto.UserRoleUpdateRequestDTO;
 import com.tierranativa.aplicacion.tierra.nativa.entity.RoleLogin;
-import com.tierranativa.aplicacion.tierra.nativa.entity.User;
 import com.tierranativa.aplicacion.tierra.nativa.service.BookingService;
 import com.tierranativa.aplicacion.tierra.nativa.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,12 +55,11 @@ class AdminControllerTest {
     @Test
     void updateRole_Success() throws Exception {
         UserRoleUpdateRequestDTO request = new UserRoleUpdateRequestDTO("user@test.com", RoleLogin.ADMIN);
-        User updatedUser = User.builder()
+        UserResponseDTO updatedUser = UserResponseDTO.builder()
                 .email("user@test.com")
                 .role(RoleLogin.ADMIN)
                 .firstName("Juan")
                 .lastName("Perez")
-                .enabled(true)
                 .build();
 
         when(userService.updateRole(any(UserRoleUpdateRequestDTO.class))).thenReturn(updatedUser);
@@ -79,8 +78,8 @@ class AdminControllerTest {
 
     @Test
     void getAllUsers_Success() throws Exception {
-        User user1 = User.builder().email("admin@test.com").role(RoleLogin.ADMIN).build();
-        User user2 = User.builder().email("user@test.com").role(RoleLogin.USER).build();
+        UserResponseDTO user1 = UserResponseDTO.builder().email("admin@test.com").role(RoleLogin.ADMIN).build();
+        UserResponseDTO user2 = UserResponseDTO.builder().email("user@test.com").role(RoleLogin.USER).build();
 
         when(userService.findAll()).thenReturn(List.of(user1, user2));
 

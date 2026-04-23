@@ -1,5 +1,6 @@
 package com.tierranativa.aplicacion.tierra.nativa.service;
 
+import com.tierranativa.aplicacion.tierra.nativa.dto.UserResponseDTO;
 import com.tierranativa.aplicacion.tierra.nativa.dto.UserRoleUpdateRequestDTO;
 import com.tierranativa.aplicacion.tierra.nativa.entity.User;
 import com.tierranativa.aplicacion.tierra.nativa.exception.ResourceNotFoundException;
@@ -17,17 +18,20 @@ public class UserService {
     private final UserRepository userRepository;
 
     @Transactional
-    public User updateRole(UserRoleUpdateRequestDTO request) {
+    public UserResponseDTO updateRole(UserRoleUpdateRequestDTO request) {
         String emailToSearch = request.getEmail().trim().toLowerCase();
 
         User user = userRepository.findByEmail(emailToSearch)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con email: " + emailToSearch));
 
         user.setRole(request.getNewRole());
-        return userRepository.save(user);
+        User saved = userRepository.save(user);
+        return UserResponseDTO.fromEntity(saved);
     }
 
-    public List<User> findAll() {
-        return userRepository.findAll();
+    public List<UserResponseDTO> findAll() {
+        return userRepository.findAll().stream()
+                .map(UserResponseDTO::fromEntity)
+                .toList();
     }
 }

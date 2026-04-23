@@ -1,5 +1,6 @@
 package com.tierranativa.aplicacion.tierra.nativa.service;
 
+import com.tierranativa.aplicacion.tierra.nativa.dto.UserResponseDTO;
 import com.tierranativa.aplicacion.tierra.nativa.dto.UserRoleUpdateRequestDTO;
 import com.tierranativa.aplicacion.tierra.nativa.entity.RoleLogin;
 import com.tierranativa.aplicacion.tierra.nativa.entity.User;
@@ -53,7 +54,7 @@ class UserServiceTest {
         when(userRepository.findByEmail("tierranativa.dev@gmail.com")).thenReturn(Optional.of(mockUser));
         when(userRepository.save(any(User.class))).thenReturn(mockUser);
 
-        User result = userService.updateRole(request);
+        UserResponseDTO result = userService.updateRole(request);
 
         assertThat(result.getRole()).isEqualTo(RoleLogin.ADMIN);
         verify(userRepository, times(1)).save(mockUser);
@@ -76,7 +77,7 @@ class UserServiceTest {
     void findAll_Success() {
         when(userRepository.findAll()).thenReturn(List.of(mockUser));
 
-        List<User> result = userService.findAll();
+        List<UserResponseDTO> result = userService.findAll();
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getEmail()).isEqualTo("tierranativa.dev@gmail.com");
