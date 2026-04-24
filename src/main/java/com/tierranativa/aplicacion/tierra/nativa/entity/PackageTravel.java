@@ -30,7 +30,7 @@ public class PackageTravel {
     @Column(name = "base_price", nullable = false)
     private Double basePrice;
 
-    @Column(name = "short_description", nullable = false)
+    @Column(name = "short_description", nullable = false, columnDefinition = "TEXT")
     private String shortDescription;
 
     @Column(name = "destination", nullable = false)

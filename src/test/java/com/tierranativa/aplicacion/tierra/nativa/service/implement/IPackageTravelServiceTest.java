@@ -82,7 +82,6 @@ class IPackageTravelServiceTest {
         detailDto.setFoodAndHydrationNotes("Comida");
         detailDto.setGeneralRecommendations("Tips");
 
-        // Sprint 4: incluye capacity y numberOfDays
         validDto = PackageTravelRequestDTO.builder()
                 .name("Paquete Nuevo")
                 .basePrice(1500.00)
@@ -102,10 +101,6 @@ class IPackageTravelServiceTest {
                 .build();
     }
 
-    // =========================================================
-    // registerNewPackage
-    // =========================================================
-
     @Test
     void registerNewPackage_Success() throws Exception {
         when(categoryRepository.findById(1L)).thenReturn(Optional.of(geoPaisajes));
@@ -121,8 +116,6 @@ class IPackageTravelServiceTest {
         assertThat(saved.getName()).isEqualTo("Paquete Nuevo");
         assertThat(saved.getBasePrice()).isEqualTo(1500.00);
         assertThat(saved.getDestination()).isEqualTo("Destino Test");
-
-        // Sprint 4: capacity y numberOfDays deben persistirse
         assertThat(saved.getCapacity()).isEqualTo(15);
         assertThat(saved.getNumberOfDays()).isEqualTo(5);
     }
@@ -150,10 +143,6 @@ class IPackageTravelServiceTest {
         verify(packageTravelRepository, never()).save(any());
     }
 
-    // =========================================================
-    // update
-    // =========================================================
-
     @Test
     void update_Success() throws Exception {
         when(categoryRepository.findById(1L)).thenReturn(Optional.of(geoPaisajes));
@@ -167,7 +156,6 @@ class IPackageTravelServiceTest {
         verify(packageTravelRepository).save(packageTravelCaptor.capture());
         PackageTravel updated = packageTravelCaptor.getValue();
 
-        // Sprint 4: capacity y numberOfDays también deben actualizarse
         assertThat(updated.getCapacity()).isEqualTo(15);
         assertThat(updated.getNumberOfDays()).isEqualTo(5);
     }
@@ -179,10 +167,6 @@ class IPackageTravelServiceTest {
         assertThrows(ResourceNotFoundException.class,
                 () -> packageTravelService.update(99L, validDto, adminUser));
     }
-
-    // =========================================================
-    // delete
-    // =========================================================
 
     @Test
     void delete_Success() {
@@ -199,10 +183,6 @@ class IPackageTravelServiceTest {
 
         assertThrows(ResourceNotFoundException.class, () -> packageTravelService.delete(99L));
     }
-
-    // =========================================================
-    // findByCategoryTitle / findCategoryByTitle
-    // =========================================================
 
     @Test
     void findByCategoryTitle_Success() {

@@ -5,6 +5,7 @@ import com.tierranativa.aplicacion.tierra.nativa.entity.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
@@ -14,6 +15,7 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class PackageTravelRepositoryTest {
 
     @Autowired
@@ -26,18 +28,17 @@ class PackageTravelRepositoryTest {
     private PackageTravel packageTravel2;
     private Category geoPaisajes;
     private Category relajacion;
-    private Characteristics characteristics;
 
     @BeforeEach
     void setUp() {
         geoPaisajes = Category.builder()
-                .title("GEOPAISAJES")
+                .title("TEST_GEOPAISAJES")
                 .description("Descripción para la categoría de geopaisajes")
                 .imageUrl("https://images.pexels.com/photos/13659148/pexels-photo-13659148.jpeg")
                 .build();
 
         relajacion = Category.builder()
-                .title("RELAJACION")
+                .title("TEST_RELAJACION")
                 .description("Descripción para la categoría de relajación")
                 .imageUrl("https://images.pexels.com/photos/13659148/pexels-photo-13659148.jpeg")
                 .build();
@@ -60,7 +61,7 @@ class PackageTravelRepositoryTest {
                 .build();
 
         packageTravel1 = new PackageTravel();
-        packageTravel1.setName("Aventura Patagonia");
+        packageTravel1.setName("Aventura Patagonia TEST");
         packageTravel1.setBasePrice(1500.00);
         packageTravel1.setDestination("Patagonia Argentina");
         packageTravel1.setShortDescription("Una breve descripción de la aventura.");
@@ -83,7 +84,7 @@ class PackageTravelRepositoryTest {
                 .build();
 
         packageTravel2 = new PackageTravel();
-        packageTravel2.setName("Relajación Cordobesa");
+        packageTravel2.setName("Relajación Cordobesa TEST");
         packageTravel2.setBasePrice(800.50);
         packageTravel2.setDestination("Sierras de Córdoba");
         packageTravel2.setShortDescription("Una breve descripción de la relajación.");
@@ -104,10 +105,10 @@ class PackageTravelRepositoryTest {
 
     @Test
     void testFindByCategories_Title() {
-        List<PackageTravel> found = packageTravelRepository.findByCategories_Title("GEOPAISAJES");
+        List<PackageTravel> found = packageTravelRepository.findByCategories_Title("TEST_GEOPAISAJES");
 
         assertThat(found).hasSize(1);
-        assertThat(found.get(0).getName()).isEqualTo("Aventura Patagonia");
+        assertThat(found.get(0).getName()).isEqualTo("Aventura Patagonia TEST");
     }
 
     @Test
@@ -115,22 +116,22 @@ class PackageTravelRepositoryTest {
         List<PackageTravel> found = packageTravelRepository.findByCategoriesContaining(geoPaisajes);
 
         assertThat(found).hasSize(1);
-        assertThat(found.get(0).getName()).isEqualTo("Aventura Patagonia");
+        assertThat(found.get(0).getName()).isEqualTo("Aventura Patagonia TEST");
         assertThat(found.get(0).getImages()).isNotEmpty();
     }
 
     @Test
     void testExistsByName() {
-        assertThat(packageTravelRepository.existsByName("Aventura Patagonia")).isTrue();
+        assertThat(packageTravelRepository.existsByName("Aventura Patagonia TEST")).isTrue();
         assertThat(packageTravelRepository.existsByName("Inexistente")).isFalse();
     }
 
     @Test
     void testExistsByNameAndIdNot() {
-        boolean exists = packageTravelRepository.existsByNameAndIdNot("Aventura Patagonia", packageTravel2.getId());
+        boolean exists = packageTravelRepository.existsByNameAndIdNot("Aventura Patagonia TEST", packageTravel2.getId());
         assertThat(exists).isTrue();
 
-        boolean existsSelf = packageTravelRepository.existsByNameAndIdNot("Aventura Patagonia", packageTravel1.getId());
+        boolean existsSelf = packageTravelRepository.existsByNameAndIdNot("Aventura Patagonia TEST", packageTravel1.getId());
         assertThat(existsSelf).isFalse();
     }
 }

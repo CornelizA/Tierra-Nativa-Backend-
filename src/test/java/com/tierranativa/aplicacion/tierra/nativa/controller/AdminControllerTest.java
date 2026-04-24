@@ -48,10 +48,6 @@ class AdminControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(adminController).build();
     }
 
-    // =========================================================
-    // PUT /admin/role
-    // =========================================================
-
     @Test
     void updateRole_Success() throws Exception {
         UserRoleUpdateRequestDTO request = new UserRoleUpdateRequestDTO("user@test.com", RoleLogin.ADMIN);
@@ -72,10 +68,6 @@ class AdminControllerTest {
                 .andExpect(jsonPath("$.email").value("user@test.com"));
     }
 
-    // =========================================================
-    // GET /admin
-    // =========================================================
-
     @Test
     void getAllUsers_Success() throws Exception {
         UserResponseDTO user1 = UserResponseDTO.builder().email("admin@test.com").role(RoleLogin.ADMIN).build();
@@ -89,10 +81,6 @@ class AdminControllerTest {
                 .andExpect(jsonPath("$[0].role").value("ADMIN"))
                 .andExpect(jsonPath("$[1].role").value("USER"));
     }
-
-    // =========================================================
-    // GET /admin/bookings
-    // =========================================================
 
     @Test
     void getAllBookings_Success_ReturnsAllBookings() throws Exception {
@@ -127,10 +115,6 @@ class AdminControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(0));
     }
-
-    // =========================================================
-    // PATCH /admin/bookings/{id}/contacted
-    // =========================================================
 
     @Test
     void updateContactedStatus_True_Success() throws Exception {

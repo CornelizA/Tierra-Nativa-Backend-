@@ -15,13 +15,14 @@ de datos y servir los endpoints para la aplicación de paquetes de viaje.
 - **JSON Web Token (JWT)**  (Seguridad basada en estados/tokens)
 - **Spring Data JPA**  (Persistencia)
 - **Spring Boot Starter Web**  (Controladores REST)
-- **H2 Database** (Base de Datos en memoria para desarrollo/testing)
+- **MySQL 8.x** (Base de datos relacional para producción y persistencia real)
 
 ### 🛠️ Herramientas de Desarrollo
 
 - **Maven** (Gestión de dependencias)
 - **JUnit 5 / Mockito** (Testing)
 - **Lombok**  (Generación de código boilerplate)
+- **H2 Database** (Utilizada exclusivamente para entornos de Testing aislados)
 
 ---
 
@@ -31,6 +32,7 @@ de datos y servir los endpoints para la aplicación de paquetes de viaje.
 
 - `Java 21+`
 - `Maven`
+- `MySQL Server 8.0+`
 
 ### 📦 Cloná el repositorio
 
@@ -39,11 +41,20 @@ git clone [https://github.com/CornelizA/Tierra-Nativa-Backend-.git]
 cd Tierra-Nativa
 ```
 
-### 🛠️ Correr el Backend
+### 🛠️ Configuración de Base de Datos
 
-El proyecto está configurado para ejecutarse directamente con el plugin de Spring Boot, utilizando H2 como base de datos
-en memoria (por defecto).
+1. Abre tu gestor de base de datos (MySQL Workbench) y crea el esquema:
+```
+CREATE DATABASE db_tierra_nativa;
+```
 
+2. Configura tus credenciales en src/main/resources/application.properties:
+```
+spring.datasource.url=jdbc:mysql://localhost:3306/db_tierra_nativa
+spring.datasource.username=tu_usuario
+spring.datasource.password=tu_contraseña
+```
+3. Correr el Backend:
 ```
 Bash
 # Construir, compilar e instalar dependencias

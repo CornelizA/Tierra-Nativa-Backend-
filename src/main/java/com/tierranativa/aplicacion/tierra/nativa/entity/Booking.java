@@ -36,6 +36,7 @@ public class Booking {
     @Column(nullable = false)
     private Double totalPrice;
 
+    @Column(columnDefinition = "TEXT")
     private String specialRequests;
 
     @ManyToOne(fetch = FetchType.LAZY)

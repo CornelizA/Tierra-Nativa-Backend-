@@ -25,16 +25,13 @@ public class PackageItineraryDetail {
     @Column(name = "transfer_type", nullable = false)
     private String transferType;
 
-    @Lob
-    @Column(name = "daily_activities_description", nullable = false)
+    @Column(name = "daily_activities_description", nullable = false, columnDefinition = "TEXT")
     private String dailyActivitiesDescription;
 
-    @Lob
-    @Column(name = "food_and_hydration_notes", nullable = false)
+    @Column(name = "food_and_hydration_notes", nullable = false, columnDefinition = "TEXT")
     private String foodAndHydrationNotes;
 
-    @Lob
-    @Column(name = "general_recommendations")
+    @Column(name = "general_recommendations", columnDefinition = "TEXT")
     private String generalRecommendations;
 
     @JsonBackReference

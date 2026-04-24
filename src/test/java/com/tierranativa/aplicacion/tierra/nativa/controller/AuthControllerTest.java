@@ -48,7 +48,6 @@ class AuthControllerTest {
         request.setEmail("test@mail.com");
         request.setFirstName("Juan");
         request.setLastName("Perez");
-        // Debe satisfacer: ≥8 chars, mayúscula, minúscula, dígito y símbolo especial
         request.setPassword("Test1234@");
 
         AuthenticationResponse response = AuthenticationResponse.builder()

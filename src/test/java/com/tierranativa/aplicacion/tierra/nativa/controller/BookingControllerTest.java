@@ -77,10 +77,6 @@ class BookingControllerTest {
                 .build();
     }
 
-    // =========================================================
-    // POST /bookings
-    // =========================================================
-
     @Test
     void createBooking_Success() throws Exception {
         Mockito.when(bookingService.createBooking(any(), any()))
@@ -126,14 +122,9 @@ class BookingControllerTest {
                         .with(user(testUser))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validRequest)))
-                // IllegalStateException → GlobalException → 400 BAD REQUEST
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").exists());
     }
-
-    // =========================================================
-    // GET /bookings/my-bookings
-    // =========================================================
 
     @Test
     void getMyBookings_Success() throws Exception {
@@ -165,10 +156,6 @@ class BookingControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
-    // =========================================================
-    // GET /bookings/{id}
-    // =========================================================
-
     @Test
     void getBookingById_Success() throws Exception {
         Mockito.when(bookingService.getBookingById(eq(100L), any()))
@@ -194,14 +181,9 @@ class BookingControllerTest {
 
         mockMvc.perform(get("/bookings/100")
                         .with(user(testUser)))
-                // IllegalStateException → GlobalException → 400 BAD REQUEST
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("No tienes permisos para ver esta reserva."));
     }
-
-    // =========================================================
-    // PATCH /bookings/{id}/cancel
-    // =========================================================
 
     @Test
     void cancelBooking_Success() throws Exception {
@@ -228,7 +210,6 @@ class BookingControllerTest {
 
         mockMvc.perform(patch("/bookings/100/cancel")
                         .with(user(testUser)))
-                // IllegalStateException → GlobalException → 400 BAD REQUEST
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").exists());
     }
@@ -239,16 +220,11 @@ class BookingControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
-    // =========================================================
-    // GET /bookings/{id}/available-capacity
-    // =========================================================
-
     @Test
     void getAvailableCapacity_Success() throws Exception {
         Mockito.when(bookingService.getAvailableSpots(anyLong(), any(), any()))
                 .thenReturn(7);
 
-        // /bookings/** requiere autenticación según SecurityConfig
         mockMvc.perform(get("/bookings/10/available-capacity")
                         .with(user(testUser))
                         .param("startDate", LocalDate.now().plusDays(30).toString())

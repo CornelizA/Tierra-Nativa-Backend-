@@ -55,10 +55,6 @@ class EmailServiceTest {
                 .build();
     }
 
-    // =========================================================
-    // sendWelcomeEmail
-    // =========================================================
-
     @Test
     void sendWelcomeEmail_Success_CallsMailSenderAndTemplateEngine() {
         when(templateEngine.process(eq("welcome-email"), any(Context.class)))
@@ -69,10 +65,6 @@ class EmailServiceTest {
         verify(mailSender, times(1)).send(any(MimeMessage.class));
         verify(templateEngine, times(1)).process(eq("welcome-email"), any(Context.class));
     }
-
-    // =========================================================
-    // sendBookingConfirmation
-    // =========================================================
 
     @Test
     void sendBookingConfirmation_Success_CallsMailSenderAndTemplateEngine() {
@@ -92,13 +84,8 @@ class EmailServiceTest {
 
         emailService.sendBookingConfirmation(sampleBooking);
 
-        // Verifica al menos que el mailSender se invocó (destinatario se configura vía helper)
         verify(mailSender, times(1)).send(any(MimeMessage.class));
     }
-
-    // =========================================================
-    // sendCancellationEmail
-    // =========================================================
 
     @Test
     void sendCancellationEmail_Success_CallsMailSenderAndTemplateEngine() {
@@ -115,11 +102,9 @@ class EmailServiceTest {
     void sendCancellationEmail_DoesNotThrow_OnMailFailure() {
         when(templateEngine.process(eq("booking-cancellation"), any(Context.class)))
                 .thenReturn("<html>Cancelación</html>");
-        // sendCancellationEmail captura la excepción internamente → no relanza
         doThrow(new org.springframework.mail.MailSendException("SMTP fail"))
                 .when(mailSender).send(any(MimeMessage.class));
 
-        // No debe propagarse la excepción (la implementación solo loguea)
         org.junit.jupiter.api.Assertions.assertDoesNotThrow(
                 () -> emailService.sendCancellationEmail(sampleBooking));
     }
