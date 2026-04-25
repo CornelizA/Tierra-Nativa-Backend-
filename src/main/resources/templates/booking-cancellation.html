@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tierra Nativa - Cancelación de Reserva</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f4f1e8; font-family: 'Inter', Helvetica, Arial, sans-serif;">
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #fff; padding: 30px 0;">
+    <tr>
+        <td align="center">
+            <table border="0" cellpadding="0" cellspacing="0" width="600"
+                   style="background-color: #FAF8F0; border-radius: 8px; overflow: hidden; border: 1px solid #e0d9c5;">
+
+                <tr>
+                    <td align="center" style="padding: 24px 0; background-color: #1A531A;">
+                        <img src="cid:logoTierra"
+                             alt="Tierra Nativa"
+                             width="90"
+                             style="display: block; width: 90px; height: auto; border: 0;">
+                    </td>
+                </tr>
+
+                <tr>
+                    <td align="center" style="padding: 36px 40px 10px 40px;">
+                        <h1 style="margin: 0; font-size: 26px; color: #B85C38;">Reserva cancelada</h1>
+                        <p style="margin: 12px 0 0 0; font-size: 16px; color: #555;">
+                            Hola, <strong th:text="${nombreCliente}">Cliente</strong>.
+                            Te confirmamos que tu reserva ha sido cancelada con éxito.
+                        </p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="padding: 24px 40px;">
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%"
+                               style="background-color: #ffffff; border-radius: 6px; border: 1px solid #d4cdb8; overflow: hidden;">
+
+                            <tr>
+                                <td colspan="2"
+                                    style="padding: 14px 20px; background-color: #B85C38; color: #ffffff; font-size: 13px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;">
+                                    N&#xba; de Reserva cancelada:&nbsp;
+                                    <span style="font-size: 16px; font-weight: 700;"
+                                          th:text="'#' + ${idReserva}">#000</span>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td style="padding: 14px 20px; border-bottom: 1px solid #ece8db; width: 40%; color: #777; font-size: 14px; font-weight: 600;">
+                                    Experiencia
+                                </td>
+                                <td style="padding: 14px 20px; border-bottom: 1px solid #ece8db; color: #333; font-size: 14px; font-weight: 700;"
+                                    th:text="${nombrePaquete}">Nombre del paquete
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td style="padding: 14px 20px; border-bottom: 1px solid #ece8db; color: #777; font-size: 14px; font-weight: 600;">
+                                    Destino
+                                </td>
+                                <td style="padding: 14px 20px; border-bottom: 1px solid #ece8db; color: #333; font-size: 14px;"
+                                    th:text="${destino}">Destino
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td style="padding: 12px 20px; border-bottom: 1px solid #ece8db; color: #777; font-size: 14px; font-weight: 600;">
+                                    Fechas
+                                </td>
+                                <td style="padding: 12px 20px; border-bottom: 1px solid #ece8db; color: #333; font-size: 14px;">
+                                    <span th:text="${fechaInicio}">dd/mm/aaaa</span> al <span th:text="${fechaFin}">dd/mm/aaaa</span>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td style="padding: 14px 20px; border-bottom: 1px solid #ece8db; color: #777; font-size: 14px; font-weight: 600;">
+                                    Viajeros
+                                </td>
+                                <td style="padding: 14px 20px; border-bottom: 1px solid #ece8db; color: #333; font-size: 14px;"
+                                    th:text="${cantidadPersonas} + ' persona(s)'">1 persona(s)
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td style="padding: 14px 20px; border-bottom: 1px solid #ece8db; color: #777; font-size: 14px; font-weight: 600;">
+                                    Total Anulado
+                                </td>
+                                <td style="padding: 14px 20px; border-bottom: 1px solid #ece8db; color: #333; font-size: 14px;"
+                                    th:text="'$ ' + ${#numbers.formatDecimal(precioTotal, 1, 'POINT', 2, 'COMMA')}">$
+                                    0,00
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td style="padding: 14px 20px; background-color: #fdf0eb; color: #B85C38; font-size: 15px; font-weight: 700;">
+                                    Estado
+                                </td>
+                                <td style="padding: 14px 20px; background-color: #fdf0eb; color: #B85C38; font-size: 14px; font-weight: 700;">
+                                    Cancelada — cupos liberados
+                                </td>
+                            </tr>
+
+                        </table>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="padding: 0 40px 30px 40px; color: #555; font-size: 14px; line-height: 1.8;">
+                        <p style="margin: 0 0 12px 0;">
+                            Lamentamos que no puedas viajar con nosotros esta vez. Sabemos que los planes a veces
+                            cambian, y lo entendemos completamente.
+                        </p>
+                        <p style="margin: 0 0 12px 0;">
+                            Los cupos reservados han sido liberados y estarán disponibles para otros viajeros.
+                            Si en algún momento querés retomar tu aventura, estaremos encantados de recibirte.
+                        </p>
+                        <p style="margin: 0; color: #888; font-size: 15px; text-align: center;">
+                            Esperamos verte pronto en otra aventura. ¡Hasta la próxima!
+                        </p>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="padding: 24px 40px; background-color: #1A531A; color: #d4f0d4; font-size: 13px; text-align: center; border-top: 1px solid #145214;">
+                        <p style="margin: 0 0 6px 0;">Tierra Nativa &copy; 2026 | Todos los derechos reservados</p>
+                        <p style="margin: 0; color: #a8d8a8;">Este correo fue generado automáticamente. Por favor no
+                            respondas a este mensaje.</p>
+                    </td>
+                </tr>
+
+            </table>
+        </td>
+    </tr>
+</table>
+</body>
+</html>
